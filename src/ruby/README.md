@@ -86,6 +86,8 @@ class ServerRequestLogInterceptor < GRPC::ServerInterceptor
   end
 end
 
+Chitti::GRPC::RpcServer.add_middleware(ServerRequestLogInterceptor.new)
+
 ```
 
 
@@ -100,6 +102,8 @@ class TaskFutureClientInterceptor < GRPC::ClientInterceptor
     response
   end
 end
+
+Testgrpc::TestgrpcService.interceptors = [TaskFutureClientInterceptor.new]
 
 ```
 

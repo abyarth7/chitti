@@ -129,6 +129,8 @@ RPCs provide a way to invoke remote methods as if they are locally available. Ho
 If the custom error is
 
 ```protobuf
+package Testgrpc;
+
 message CustomError {
   string custom = 1;
 }
@@ -146,7 +148,7 @@ Throwing an Error in your handlers:
 
 ```ruby
 def hellogrpc(req, _unused_call)
-    raise Testgrpc::Errors::CustomError.new({ custom: "custom_error_raised" })
+    raise Testgrpc::CustomError.new({ custom: "custom_error_raised" })
 end
 ```
 
@@ -156,7 +158,7 @@ Catching the error at client end:
 
 begin
     Testgrpc::TestgrpcService.hellogrpc(req)
-rescue Testgrpc::Errors::CustomError
+rescue Testgrpc::CustomError
     # Handle the error
 end
 ```

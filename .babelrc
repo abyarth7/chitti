@@ -1,5 +1,13 @@
 {
   "env": {
+    "node4": {
+      "presets": [[
+        "env", {
+          "targets": { "node": "4.9.1" }
+        }]
+      ],
+      "plugins": [ "transform-object-rest-spread" ]
+    },
     "node6": {
       "presets": [[
         "env", {

@@ -5,12 +5,12 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 Gem::Specification.new do |spec|
   spec.name          = "chitti"
   spec.version       = "1.0"
-  spec.authors       = ["Aravind Dasari"]
-  spec.email         = ["aravind.d@nestaway.com"]
+  spec.authors       = ["NestAway Core-Infra Team"]
+  spec.email         = ["platform@nestaway.com"]
 
-  spec.summary       = "Collection of common gRPC services for nestaway"
-  spec.description   = "Collection of common gRPC services for nestaway"
-  spec.homepage      = "https://nestaway.com"
+  spec.summary       = "A grpc wrapper for ruby and node"
+  spec.description   = "A grpc wrapper for ruby and node"
+  spec.homepage      = "https://github.com/NestAway/chitti"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.

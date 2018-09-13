@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+var HealthClient = require('grpc-health-check').Client;
+var grpc = require('grpc');
+
+var healthClient = new HealthClient('', grpc.credentials.createInsecure());
+
+try {
+    healthClient.check();
+    process.exit(0);
+}
+catch(_) {
+    process.exit(1);
+}

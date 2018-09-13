@@ -1,0 +1,20 @@
+{
+  "env": {
+    "node6": {
+      "presets": [[
+        "env", {
+          "targets": { "node": "6.13.1" }
+        }]
+      ],
+      "plugins": [ "transform-object-rest-spread" ]
+    },
+    "node8": {
+      "presets": [[
+        "env", {
+          "targets": { "node": "8.10.0" }
+        }]
+      ],
+      "plugins": [ "transform-object-rest-spread" ]
+    }
+  }
+}

@@ -139,7 +139,7 @@ message CustomError {
 you have to classify the above proto message as an error:
 
 ```ruby 
-Chitti::Error.classify( [ Testgrpc::CustomError ], {
+Chitti::Error.enable( [ Testgrpc::CustomError ], {
     code: 123
 })
 ```

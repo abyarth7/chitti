@@ -1,7 +1,7 @@
 require 'stoplight'
 require 'statsd-instrument'
-require 'commons/response_pb'
-require 'client_interceptors/grpc_error_client_interceptor'
+require '../commons/response_pb'
+require '../client_interceptors/grpc_error_client_interceptor'
 
 # Inherit this module in your RPC service class definition file => X_services_pb.rb
 # Replace GRPC::GenericService with RpcGenericService

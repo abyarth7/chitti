@@ -1,7 +1,7 @@
 require 'grpc'
 require 'json'
-require_relative '../grpc_server'
-require_relative '../rpc_generic_service'
+require_relative '../grpc_core/grpc_server'
+require_relative '../grpc_core/rpc_generic_service'
 
 class GRPCErrorClientInterceptor < GRPC::ClientInterceptor
   def request_response(request:, call:, method:, metadata:)

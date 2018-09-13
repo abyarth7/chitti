@@ -1,8 +1,8 @@
 require 'grpc'
 require 'base64'
 require_relative '../logger/log'
-require_relative '../grpc_error'
-require_relative '../grpc_server'
+require_relative '../grpc_core/grpc_error'
+require_relative '../grpc_core/grpc_server'
 
 class ErrorMiddleware < GRPC::ServerInterceptor
   def request_response(request:, call:, method:)

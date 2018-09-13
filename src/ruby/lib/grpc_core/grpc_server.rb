@@ -1,5 +1,5 @@
-require_relative 'modules/health/health_service'
-require_relative 'logger/log'
+require_relative '../modules/health/health_service'
+require_relative '../logger/log'
 require_relative './rpc_desc'
 
 module Chitti

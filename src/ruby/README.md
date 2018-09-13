@@ -13,13 +13,12 @@ Replace GRPC::GenericService with RpcGenericService
 
 require 'grpc'
 require 'testgrpc_pb'
-require 'core/nestaway_generic_service'
 
 module Testgrpc
   module TestgrpcService
     class Service
 
-      include RpcGenericService   # including the custom module
+      include Chitti::GPRC::GenericService   # including the custom module
 
       self.marshal_class_method = :encode
       self.unmarshal_class_method = :decode
@@ -41,7 +40,6 @@ end
 Implementation of the rpc methods
 ```ruby
 class  TestgrpcService < Testgrpc::TestgrpcService::Service
-
   def hellogrpc(req, _unused_call)
       Log.log.info "Received call in hellogrpc #{req.to_h}"
       response = Testgrpc::HelloResponse.new
@@ -60,13 +58,15 @@ def main
     @server.handle(TestgrpcService) # add whatever service implementations you want to include in server
     @server.start # start the server
 end
-
 ```
 
-## 3. Creating the client Stub
+## 3. calling rpc methods
 
 ```ruby
-stub = Testgrpc::TestgrpcService::Stub.new('0.0.0.0:50052', :this_channel_is_insecure, interceptors:[])#
+Testgrpc::TestgrpcService.host = "0.0.0.0"
+Testgrpc::TestgrpcService.port = "8008"
+
+Testgrpc::TestgrpcService.hellogrpc(req)
 ```
 
 
@@ -79,7 +79,6 @@ By default we added two server interceptors(statsD, custom_error_interceptor) an
 Example Implementation of server Interceptor
 
 ```ruby
-
 class ServerRequestLogInterceptor < GRPC::ServerInterceptor
   def request_response(request:, call:, method:)
     response = yield
@@ -93,7 +92,6 @@ end
 Example Implementation of client Interceptor
 
 ```ruby
-
 require 'grpc'
 
 class TaskFutureClientInterceptor < GRPC::ClientInterceptor
@@ -122,22 +120,17 @@ message CustomError {
 you have to enable the error in both server and client side like this:- 
 
 ```ruby 
-
-     Testgrpc::CustomError.class_eval do
-        include Core::GrpcCustomErrors
-        error_options ({code: 123})
-     end
-
+Testgrpc::CustomError.class_eval do
+  include Chitti::GRPC::Error
+  error_options code: 123
+end
 ```
 
 Throwing an Error in your handler's:-
 
 ```ruby
-
-  def hellogrpc(req, _unused_call)
-      c_err = Testgrpc::Errors::CustomError.new({custom: "custom_error_raised"})
-      raise c_err
-  end
-
+def hellogrpc(req, _unused_call)
+    c_err = Testgrpc::Errors::CustomError.new({custom: "custom_error_raised"})
+    raise c_err
+end
 ```
-

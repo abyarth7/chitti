@@ -89,6 +89,9 @@ grpc_server.start();
           }
       }
   }
+
+  GRPCService.addmiddleware(new DemoMiddleware());
+
 ```
 6. Adding Client interceptor
 
@@ -115,5 +118,5 @@ function DemoClientInterceptor(options, nextCall) {
     return new grpc.InterceptingCall(nextCall(options), requester);
 }
 
-export default DemoClientInterceptor;
+DemoService.interceptors = [new DemoClientInterceptor()];
 ```

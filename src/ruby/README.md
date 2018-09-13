@@ -1,24 +1,29 @@
-This is a collection of common services and modules for gRPC communication with microservices.
+Chitti wraps grpc to provide a simpler, generic and extensible way to implement remote proceedure calls.
 
-Installation
-gem 'nestaway-grpc-core',:git => "git@github.com:NestAway/nestaway-grpc-core.git",:branch => 'master'
 
-#Usage
+# Installation
+
+gem 'chitti', :git => 'git@github.com:NestAway/chitti.git', :branch => 'master'
+
+
+
+# Usage
+
 ## 1. Inherit this module in your RPC service class definition file => X_services_pb.rb
 
-Replace GRPC::GenericService with RpcGenericService
+Replace `GRPC::GenericService` with `Chitti::GenericService`
 
 
 ```ruby
 
-require 'grpc'
+require 'chitti'
 require 'testgrpc_pb'
 
 module Testgrpc
   module TestgrpcService
     class Service
 
-      include Chitti::GPRC::GenericService   # including the custom module
+      include Chitti::GenericService   # including the custom module
 
       self.marshal_class_method = :encode
       self.unmarshal_class_method = :decode
@@ -34,10 +39,11 @@ end
 ```
 
 
-## 2. Creating the server
-
+## 2. Implementing service handlers
 
 Implementation of the rpc methods
+
+
 ```ruby
 class  TestgrpcService < Testgrpc::TestgrpcService::Service
   def hellogrpc(req, _unused_call)
@@ -49,32 +55,39 @@ class  TestgrpcService < Testgrpc::TestgrpcService::Service
 end
 ```
 
-In your server class:
+
+## 3. Starting the server
 
 ```ruby
-require 'core/grpc_server'
+require 'chitti'
+
 def main
-    @server = Core::GrpcServer.new(host_port: '0.0.0.0:500052', pool_size: 10, max_waiting_requests: 10, interceptors: [])
+    @server = Chitti::RpcServer.new(host_port: '0.0.0.0:500052', pool_size: 10, max_waiting_requests: 10, interceptors: [])
     @server.handle(TestgrpcService) # add whatever service implementations you want to include in server
     @server.start # start the server
 end
 ```
 
-## 3. calling rpc methods
+
+## 4. Calling rpc methods
 
 ```ruby
+# global config
 Testgrpc::TestgrpcService.host = "0.0.0.0"
 Testgrpc::TestgrpcService.port = "8008"
 
+# Call the rpc method
 Testgrpc::TestgrpcService.hellogrpc(req)
+
 ```
 
 
-## 4. Adding Interceptors to client and server
+## 5. Adding Interceptors to client and server
 
 We can add client and server interceptors while creating the server and client stub by passing interceptors array as arguments.
 
 By default we added two server interceptors(statsD, custom_error_interceptor) and one client interceptor(custom_error_client_interceptor)
+
 
 Example Implementation of server Interceptor
 
@@ -86,7 +99,7 @@ class ServerRequestLogInterceptor < GRPC::ServerInterceptor
   end
 end
 
-Chitti::GRPC::RpcServer.add_middleware(ServerRequestLogInterceptor.new)
+Chitti::RpcServer.add_middleware(ServerRequestLogInterceptor.new)
 
 ```
 
@@ -108,33 +121,45 @@ Testgrpc::TestgrpcService.interceptors = [TaskFutureClientInterceptor.new]
 ```
 
 
-## 5. Custom Error Implementation
+## 6. Custom Error Implementation
 
-In Grpc, we can throw our own cutom error Object's. By using this we can throw our custom error's and will be caught same error object in the client side.
+RPCs provide a way to invoke remote methods as if they are locally available. However, this paradigm usally breaks down when it comes to handling errors. Chitti provides a local-like error handling model where service handlers throw custom exceptions and clients can handle those exceptions.
 
 
-Example Implementation of an error
+If the custom error is
 
-let your custom error be 
-
+```protobuf
 message CustomError {
   string custom = 1;
 }
-
-you have to enable the error in both server and client side like this:- 
-
-```ruby 
-Testgrpc::CustomError.class_eval do
-  include Chitti::GRPC::Error
-  error_options code: 123
-end
 ```
 
-Throwing an Error in your handler's:-
+you have to classify the above proto message as an error:
+
+```ruby 
+Chitti::Error.classify( [ Testgrpc::CustomError ], {
+    code: 123
+})
+```
+
+Throwing an Error in your handlers:
 
 ```ruby
 def hellogrpc(req, _unused_call)
-    c_err = Testgrpc::Errors::CustomError.new({custom: "custom_error_raised"})
-    raise c_err
+    raise Testgrpc::Errors::CustomError.new({ custom: "custom_error_raised" })
 end
+```
+
+Catching the error at client end:
+
+```ruby
+
+begin
+    Testgrpc::TestgrpcService.hellogrpc(req)
+rescue Testgrpc::Errors::CustomError
+    # Handle the error
+end
+```
+
+
 ```

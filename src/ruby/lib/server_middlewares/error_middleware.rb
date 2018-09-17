@@ -31,4 +31,4 @@ class ErrorMiddleware < GRPC::ServerInterceptor
   end
 end
 
-Chitti::GrpcServer.add_middleware(ErrorMiddleware.new)
+Chitti::RpcServer.add_middleware(ErrorMiddleware.new)

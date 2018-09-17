@@ -3,7 +3,7 @@ require_relative '../logger/log'
 require_relative './rpc_desc'
 
 module Chitti
-  class GrpcServer < GRPC::RpcServer
+  class RpcServer < GRPC::RpcServer
     @@middlewares = []
     DEFAULT_HOST_PORT = '0.0.0.0:500052'
     def initialize(host_port:DEFAULT_HOST_PORT,
@@ -31,4 +31,4 @@ module Chitti
   end
 end
 
-require_relative './middlewares/error_middleware'
+require_relative '../server_middlewares/error_middleware'

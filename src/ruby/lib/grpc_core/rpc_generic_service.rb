@@ -1,12 +1,14 @@
 require 'stoplight'
 require 'statsd-instrument'
 require 'commons/response_pb'
-require 'client_interceptors/grpc_error_client_interceptor'
-
-# Inherit this module in your RPC service class definition file => X_services_pb.rb
-# Replace GRPC::GenericService with RpcGenericService
 
 module Chitti
+  GlobalCallInterceptors = []
+
+  def self.add_call_interceptor(middleware_object)
+    puts 'comingggg'
+    Chitti::GlobalCallInterceptors.push(middleware_object)
+  end
 
   def self.get_hybrid_module(klass)
     rpc_descs = klass::Service.rpc_descs
@@ -15,6 +17,14 @@ module Chitti
       @stub = nil
       @host = nil
       @port = nil
+      @call_interceptors = nil
+
+      def add_call_interceptor(middleware_object)
+        @call_interceptors = [] unless call_interceptors
+        @call_interceptors.push(middleware_object)
+      end
+
+      attr_reader :call_interceptors
 
       def host=(host)
         if host.present?
@@ -29,9 +39,7 @@ module Chitti
         @is_config_changed = true
       end
 
-      def host
-        @host
-      end
+      attr_reader :host
 
       def port=(port)
         if port.present?
@@ -40,9 +48,7 @@ module Chitti
         end
       end
 
-      def port
-        @port
-      end
+      attr_reader :port
 
       def get_static_wrapper(method_name, *args)
         if @is_config_changed
@@ -50,17 +56,16 @@ module Chitti
           @stub = self::Stub.new("#{host}:#{port}", :this_channel_is_insecure)
           @is_config_changed = false
         end
-        return @stub.send(method_name, *args)
+        @stub.send(method_name, *args)
       end
 
-      rpc_descs.each do |method_name, method_data|
+      rpc_descs.each do |method_name, _method_data|
         define_method(method_name) do |*args|
           get_static_wrapper(method_name, *args)
         end
       end
     end
   end
-
 
   def self.RpcImport(klass)
     klass::Service.class_eval do
@@ -69,17 +74,14 @@ module Chitti
         klass = self
         instance_meths = stub_claz.instance_methods(false)
         alt_stub_claz = Class.new(stub_claz) do
-          @@global_interceptors = [GRPCErrorClientInterceptor.new]
-
-          def self.add_middlewares(middleware_object)
-            @@global_interceptors.push(middleware_object)
-          end
-
           def initialize(host, creds, **kw)
+            name_split = self.class.name.split('::')
+            name_split.delete_at(name_split.length - 1)
+            klass = name_split.join('::').constantize
             if kw[:interceptors]
-              kw[:interceptors] = kw[:interceptors] + @@global_interceptors
+              kw[:interceptors] = kw[:interceptors] + klass.call_interceptors || [] + Chitti::GlobalCallInterceptors
             else
-              kw[:interceptors] = @@global_interceptors
+              kw[:interceptors] = klass.call_interceptors || [] + Chitti::GlobalCallInterceptors
             end
             super(host, creds, **kw)
           end
@@ -103,3 +105,5 @@ module Chitti
     klass.extend(get_hybrid_module(klass))
   end
 end
+
+require 'client_interceptors/grpc_error_client_interceptor'

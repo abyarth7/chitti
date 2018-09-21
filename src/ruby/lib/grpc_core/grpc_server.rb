@@ -3,8 +3,14 @@ require_relative '../logger/log'
 require_relative './rpc_desc'
 
 module Chitti
+  GlobalhandlerInterceptors = []
+
+  def self.add_handler_interceptor(middleware_object)
+    Chitti::GlobalhandlerInterceptors.push(middleware_object)
+  end
+
   class RpcServer < GRPC::RpcServer
-    @@middlewares = []
+    @@handler_interceptors = []
     DEFAULT_HOST_PORT = '0.0.0.0:500052'
     def initialize(host_port:DEFAULT_HOST_PORT,
                    pool_size:DEFAULT_POOL_SIZE,
@@ -14,15 +20,15 @@ module Chitti
                    server_args:{},
                    interceptors:[]
                   )
-      interceptors += @@middlewares
+      interceptors = interceptors + @@handler_interceptors + Chitti::GlobalhandlerInterceptors
       super(pool_size: pool_size, max_waiting_requests: max_waiting_requests, poll_period: poll_period, connect_md_proc: connect_md_proc, server_args: server_args, interceptors: interceptors)
       add_http2_port(host_port, :this_port_is_insecure)
       Log.log.info "Starting to listen on #{host_port}"
       handle(Health::HealthService)
     end
 
-    def self.add_middleware(middleware_object)
-      @@middlewares.push(middleware_object)
+    def self.add_handler_interceptor(middleware_object)
+      @@handler_interceptors.push(middleware_object)
     end
 
     def start_server

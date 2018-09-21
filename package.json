@@ -1,12 +1,12 @@
 {
   "name": "chitti",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "src/node-dist/index.js",
   "repository": "git@github.com:NestAway/chitti.git",
   "author": "NestAway Core-Infra Team",
   "license": "MIT",
   "scripts": {
-    "build": "BABEL_ENV=node4 babel src/node --out-dir src/node-dist"
+    "build": "BABEL_ENV=node6 babel src/node --out-dir src/node-dist"
   },
   "engines": {
     "node": ">=4"

@@ -10,25 +10,25 @@ var _grpc2 = _interopRequireDefault(_grpc);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var maxRetries = 3;
+const maxRetries = 3;
 function GRPCRetriesInterceptor(options, nextCall) {
-    var savedMetadata = void 0;
-    var savedSendMessage = void 0;
-    var savedReceiveMessage = void 0;
-    var savedMessageNext = void 0;
-    var requester = {
+    let savedMetadata;
+    let savedSendMessage;
+    let savedReceiveMessage;
+    let savedMessageNext;
+    const requester = {
         start(metadata, listener, next) {
             savedMetadata = metadata;
-            var newListener = {
+            const newListener = {
                 onReceiveMessage(message, nextMsg) {
                     savedReceiveMessage = message;
                     savedMessageNext = nextMsg;
                 },
                 onReceiveStatus(status, nextStatus) {
-                    var retries = 0;
+                    let retries = 0;
                     function retry(message, meta) {
                         retries++;
-                        var newCall = nextCall(options);
+                        const newCall = nextCall(options);
                         newCall.start(meta, {
                             onReceiveMessage(msgReceived) {
                                 savedReceiveMessage = msgReceived;

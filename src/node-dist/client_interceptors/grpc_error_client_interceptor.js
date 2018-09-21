@@ -16,7 +16,7 @@ var _grpc_custom_error = require('../grpc-core/grpc_custom_error');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var defaultCreateStatus = _common2.default.createStatusError;
+const defaultCreateStatus = _common2.default.createStatusError;
 
 _common2.default.createStatusError = function (status) {
     if (status.stack) {
@@ -26,24 +26,24 @@ _common2.default.createStatusError = function (status) {
 };
 
 function GRPCErrorClientInterceptor(options, nextCall) {
-    var savedMessage = void 0;
-    var savedMessageNext = void 0;
-    var requester = {
+    let savedMessage;
+    let savedMessageNext;
+    const requester = {
         start(metadata, listener, next) {
-            var new_listener = {
+            const new_listener = {
                 onReceiveMessage(message, nextMessage) {
                     savedMessage = message;
                     savedMessageNext = nextMessage;
                 },
                 onReceiveStatus(status, nextStatus) {
                     if (status.code !== _grpc2.default.status.OK) {
-                        var errobj = void 0;
+                        let errobj;
                         if (status.metadata.get('grpc_custom_error')[0]) {
                             errobj = JSON.parse(status.metadata.get('grpc_custom_error')[0]);
                             status.metadata.remove('grpc_custom_error');
                         }
                         if (errobj && _grpc_custom_error.GRPCErrorRegistry[errobj.type]) {
-                            var newError = new _grpc_custom_error.GRPCErrorRegistry[errobj.type].ctr(_grpc_custom_error.GRPCErrorRegistry[errobj.type].ctr.decode(Buffer.from(errobj.payload, 'base64')));
+                            const newError = new _grpc_custom_error.GRPCErrorRegistry[errobj.type].ctr(_grpc_custom_error.GRPCErrorRegistry[errobj.type].ctr.decode(Buffer.from(errobj.payload, 'base64')));
                             newError.code = status.code;
                             newError.details = status.details;
                             newError.metadata = status.metadata;

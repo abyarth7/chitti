@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.GRPCError = exports.GRPCClient = exports.GRPCServer = exports.GRPCService = exports.GRPCMiddleware = undefined;
+exports.GRPCError = exports.RPCImport = exports.GRPCServer = exports.GRPCService = exports.GRPCMiddleware = undefined;
 
 var _grpc_middleware = require('./grpc-core/grpc_middleware');
 
@@ -30,5 +30,5 @@ require('./server_middlewares/error_middleware');
 exports.GRPCMiddleware = _grpc_middleware2.default;
 exports.GRPCService = _grpc_service2.default;
 exports.GRPCServer = _grpc_server2.default;
-exports.GRPCClient = _grpc_client2.default;
+exports.RPCImport = _grpc_client2.default;
 exports.GRPCError = _grpc_custom_error.GRPCError;

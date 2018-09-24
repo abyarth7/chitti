@@ -6,7 +6,7 @@ class GRPCErrorHandlerInterceptor < GRPC::ServerInterceptor
     begin
       response = yield
     rescue Exception => exception
-      Log.log.info "Error caught in ErrorMiddleware: #{exception.backtrace}"
+      Chitti.logger.info "Error caught in ErrorMiddleware: #{exception.backtrace}"
       exception_class = exception.class
       if exception_class.methods(false).include?(:type) && exception.instance_variable_get('@data')
         package_prefix = exception_class.name

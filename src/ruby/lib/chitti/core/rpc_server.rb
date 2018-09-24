@@ -1,5 +1,5 @@
 require 'chitti/health/health_service_handler'
-require 'chitti/grpc_core/rpc_desc_patch'
+require 'chitti/core/grpc_desc_patch'
 
 module Chitti
   class RpcServer < GRPC::RpcServer
@@ -16,7 +16,7 @@ module Chitti
       interceptors = interceptors + @@handler_interceptors + Chitti::GlobalHandlerInterceptors
       super(pool_size: pool_size, max_waiting_requests: max_waiting_requests, poll_period: poll_period, connect_md_proc: connect_md_proc, server_args: server_args, interceptors: interceptors)
       add_http2_port(host_port, :this_port_is_insecure)
-      Log.log.info "Starting to listen on #{host_port}"
+      Chitti.logger.info "Starting to listen on #{host_port}"
       handle(Health::HealthService)
     end
 

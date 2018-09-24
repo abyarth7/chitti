@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z src/ruby`.split("\x0")
   spec.bindir        = "src/ruby/bin"
   spec.executables   = spec.files.grep(%r{^src/ruby/bin/}) { |f| File.basename(f) }
-  spec.require_paths = ["src/ruby"]
+  spec.require_paths = ["src/ruby/lib"]
 
   spec.add_development_dependency "bundler", "~> 1.12"
   spec.add_development_dependency "rake", "~> 10.0"

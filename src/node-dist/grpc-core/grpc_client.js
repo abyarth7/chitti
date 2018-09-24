@@ -25,7 +25,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const GRPCClient = grpcService => {
     if (!grpcService.isClientWrapped) {
         let isConfigChanged = true;
-        const serviceName = _setServiceName(grpcService);
+        const serviceName = _getServiceName(grpcService);
         const ServiceClient = {
             [serviceName]: class extends grpcService {
                 constructor(...args) {
@@ -43,9 +43,7 @@ const GRPCClient = grpcService => {
                     if (!host) throw new Error('Host is required');
                     const splitHost = host.split(':');
                     this.envVars.host = splitHost[0];
-                    if (splitHost[1]) {
-                        this.envVars.port = splitHost[1];
-                    }
+                    if (splitHost[1]) this.envVars.port = splitHost[1];
                     isConfigChanged = true;
                 }
                 static get host() {
@@ -62,7 +60,8 @@ const GRPCClient = grpcService => {
                 }
             }
         }[serviceName];
-        ServiceClient.Services = class {};
+        ServiceClient.Service = { [serviceName]: class {} }[serviceName];
+        ServiceClient.Service.ServiceClient = ServiceClient;
         ServiceClient.envVars = {};
         ServiceClient.globalInterceptors = [_grpc_error_client_interceptor2.default];
         ServiceClient.isClientWrapped = true;
@@ -100,31 +99,26 @@ const GRPCClient = grpcService => {
 const RPCImport = protoJSON => {
     const proto_root = _protobufjs2.default.Root.fromJSON(protoJSON);
     const grpc_root = _grpc2.default.loadObject(proto_root);
-    let Myservice = {};
-    Myservice = looping(grpc_root, proto_root, '');
-    return Myservice;
+    const myService = getProtoClasses(proto_root, grpc_root);
+    return myService;
 };
 
-function _setServiceName(grpcService) {
+function _getServiceName(grpcService) {
     const samplePath = grpcService.service[Object.keys(grpcService.service)[0]].path;
     const fullName = samplePath.substring(samplePath.indexOf('/') + 1, samplePath.lastIndexOf('/'));
     return fullName.substring(fullName.lastIndexOf('.') + 1);
 }
-function looping(grpc_root, proto_root, path) {
-    const Myservice = {};
-    _lodash2.default.each(grpc_root, (attr, name) => {
-        let isService = false;
-        Object.keys(attr).forEach(key => {
-            if (key === 'service') {
-                isService = true;
-            }
-        });
-        if (isService) {
-            Myservice[`${name}`] = GRPCClient(attr);
-        } else {
-            if (JSON.stringify(attr) === JSON.stringify({})) {
-                const msg_class = proto_root.lookupType(`${path}.${name}`);
-                Myservice[`${name}`] = {
+
+function getProtoClasses(proto_root, package_rpc_root, path) {
+    const myService = {};
+    _lodash2.default.each(package_rpc_root, (attr, name) => {
+        const attrs_length = Object.keys(attr).length;
+        if (attr.service) {
+            myService[name] = GRPCClient(attr);
+        } else if (attrs_length === 0) {
+            try {
+                const msg_class = proto_root.lookupType(`${path ? `${path}.` : ''}${name}`);
+                myService[name] = {
                     [msg_class.ctor.name]: class extends msg_class.ctor {
                         constructor(...args) {
                             super(...args);
@@ -132,20 +126,20 @@ function looping(grpc_root, proto_root, path) {
                                 Error.captureStackTrace(this, this.constructor);
                             }
                         }
+
                         toString() {
                             return this.constructor.name;
                         }
                     }
-
                 }[msg_class.ctor.name];
-            } else if (`${path}` === '') {
-                Myservice[`${name}`] = looping(attr, proto_root, `${name}`);
-            } else {
-                Myservice[`${name}`] = looping(attr, proto_root, `${path}.${name}`);
+            } catch (_) {
+                myService[name] = {};
             }
+        } else if (attrs_length > 0) {
+            myService[name] = getProtoClasses(proto_root, attr, `${path ? `${path}.` : ''}${name}`);
         }
     });
-    return Myservice;
+    return myService;
 }
 
 exports.default = RPCImport;

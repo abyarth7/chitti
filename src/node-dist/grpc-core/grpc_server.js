@@ -32,6 +32,10 @@ class GRPCServer extends _grpc2.default.Server {
     addService(serviceInst, implementation) {
         if (serviceInst.constructor === _grpc_service2.default) {
             super.addService(serviceInst.service, serviceInst.wrappedImplementation);
+        } else if (implementation === undefined && typeof serviceInst === 'function' && serviceInst.ServiceClient) {
+            console.log(serviceInst);
+            const grpc_service = _grpc_service2.default.handle(serviceInst.ServiceClient)(serviceInst);
+            this.addService(grpc_service);
         } else {
             super.addService(serviceInst, implementation);
         }

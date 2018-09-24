@@ -1,7 +1,7 @@
 import lodash from 'lodash';
 import grpc from 'grpc';
 import protobuf from 'protobufjs';
-import GRPCErrorClientInterceptor from '../client_interceptors/grpc_error_client_interceptor';
+import { Chitti }  from '../index';
 
 const GRPCClient = grpcService => {
     if (!grpcService.isClientWrapped) {
@@ -11,7 +11,7 @@ const GRPCClient = grpcService => {
             [serviceName]: class extends grpcService {
                 constructor(...args) {
                     const num_args = args.length;
-                    if (num_args === 2) args.push({ interceptors: ServiceClient.globalInterceptors });
+                    if (num_args === 2) args.push({ interceptors: ServiceClient.globalInterceptors.reverse() });
                     else if (num_args === 3 && args[2] instanceof Object) {
                         if (!Array.isArray(args[2].interceptors)) args[2].interceptors = [];
                         args[2].interceptors = lodash.concat(
@@ -21,8 +21,11 @@ const GRPCClient = grpcService => {
                     }
                     super(...args);
                 }
-                static addInterceptor(grpcInterceptorObject) {
+                static add_call_interceptor(grpcInterceptorObject) {
                     this.globalInterceptors.push(grpcInterceptorObject);
+                }
+                static add_handle_interceptor(grpcInterceptorObject) {
+                    Chitti.global_handle_interceptors.push(grpcInterceptorObject);
                 }
                 static set host(host) {
                     if (!host) throw new Error('Host is required');
@@ -47,8 +50,14 @@ const GRPCClient = grpcService => {
         }[serviceName];
         ServiceClient.Service = { [serviceName]: class {} }[serviceName];
         ServiceClient.Service.ServiceClient = ServiceClient;
+        ServiceClient.Service.add_handle_interceptor = function (grpcInterceptorObject) {
+            Chitti.global_handle_interceptors.push(grpcInterceptorObject);
+        };
+        ServiceClient.Service.add_call_interceptor = function (grpcInterceptorObject) {
+            Chitti.global_call_interceptors.push(grpcInterceptorObject);
+        };
         ServiceClient.envVars = {};
-        ServiceClient.globalInterceptors = [GRPCErrorClientInterceptor];
+        ServiceClient.globalInterceptors = Chitti.global_call_interceptors;
         ServiceClient.isClientWrapped = true;
         ServiceClient._getStaticWrapper = function (methodName) {
             return function (...args) {

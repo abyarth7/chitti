@@ -20,7 +20,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const logger = require('tracer').colorConsole();
 
-class ErrorMiddleware extends _grpc_middleware2.default {
+class GrpcErrorHandleMiddleware extends _grpc_middleware2.default {
     call(request, next) {
         return _asyncToGenerator(function* () {
             try {
@@ -58,4 +58,4 @@ class ErrorMiddleware extends _grpc_middleware2.default {
     }
 }
 
-exports.default = ErrorMiddleware;
+exports.default = GrpcErrorHandleMiddleware;

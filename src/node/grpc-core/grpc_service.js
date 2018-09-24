@@ -1,4 +1,5 @@
 import lodash from 'lodash';
+import { Chitti } from '../index';
 
 export default class GRPCService {
     constructor(service, implementation) {
@@ -37,7 +38,7 @@ export default class GRPCService {
 
     wrap() {
         lodash.each(this.implementation, (fn, name) => {
-            const middlewares = lodash.concat(this.constructor.globalMiddlewares, [...this.middlewares].reverse());
+            const middlewares = lodash.concat([...Chitti.global_handle_interceptors].reverse(), [...this.middlewares].reverse());
             const totalMiddleWares = middlewares.length;
             this.wrappedImplementation[name] = async (request, callback) => {
                 let index = 0;

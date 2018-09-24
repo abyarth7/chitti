@@ -28,7 +28,6 @@ class GRPCServer extends _grpc2.default.Server {
         const healthImpl = new _health_implementation2.default();
         this.addService(_health2.default.service, healthImpl);
     }
-
     addService(serviceInst, implementation) {
         if (serviceInst.constructor === _grpc_service2.default) {
             super.addService(serviceInst.service, serviceInst.wrappedImplementation);

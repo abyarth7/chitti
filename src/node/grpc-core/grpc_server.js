@@ -15,7 +15,6 @@ export default class GRPCServer extends grpc.Server {
             super.addService(serviceInst.service, serviceInst.wrappedImplementation);
         }
         else if (implementation === undefined && typeof serviceInst === 'function' && serviceInst.ServiceClient) {
-            console.log(serviceInst);
             const grpc_service = GRPCService.handle(serviceInst.ServiceClient)(serviceInst);
             this.addService(grpc_service);
         }

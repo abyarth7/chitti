@@ -30,7 +30,8 @@
     "grpc-health-check": "^1.6.6",
     "lodash": "^4.17.5",
     "statsd-client": "^0.4.2",
-    "tracer": "^0.8.12"
+    "tracer": "^0.8.12",
+    "protobufjs": "^6.8.6"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

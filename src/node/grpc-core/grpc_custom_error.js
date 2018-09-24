@@ -1,33 +1,26 @@
+import lodash from 'lodash';
+
 const GRPCErrorRegistry = {};
 const GRPCError = {};
 
-const GRPCRegisterErrors = (msg_class, options = {}) => {
+const GRPCRegisterErrors = (msg_classes, options = {}) => {
     const code = parseInt(options.code, 10);
-    let package_prefix = '';
-    for (let par = msg_class.ctor.$type.parent; par && par.name; par = par.parent) {
-        package_prefix = `${par.name}.${package_prefix}`;
-    }
-    const registryKey = `${package_prefix}${msg_class.ctor.name}`;
-    GRPCErrorRegistry[registryKey] = {};
-    GRPCErrorRegistry[registryKey].code = Number.isNaN(code) ? 500 : code;
-    GRPCErrorRegistry[registryKey].ctr = {
-        [msg_class.ctor.name]: class extends msg_class.ctor {
-            constructor(...args) {
-                super(...args);
-                Error.captureStackTrace(this, this.constructor);
-            }
-            toString() {
-                return this.constructor.name;
-            }
-        },
-
-    }[msg_class.ctor.name];
-    return GRPCErrorRegistry[registryKey].ctr;
+    lodash.each(msg_classes, msg_class => {
+        let package_prefix = '';
+        for (let par = msg_class.$type.parent; par && par.name; par = par.parent) {
+            package_prefix = `${par.name}.${package_prefix}`;
+        }
+        const registryKey = `${package_prefix}${msg_class.name}`;
+        GRPCErrorRegistry[registryKey] = {};
+        GRPCErrorRegistry[registryKey].code = Number.isNaN(code) ? 500 : code;
+        msg_class.isErrorEnabled = true;
+        GRPCErrorRegistry[registryKey].ctr = msg_class;
+    });
 };
 
 Object.assign(GRPCError, {
-    enable(messageType, options) {
-        return GRPCRegisterErrors(messageType, options);
+    enable(errorMessages, options) {
+        return GRPCRegisterErrors(errorMessages, options);
     },
 });
 

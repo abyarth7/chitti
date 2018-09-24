@@ -2,12 +2,6 @@ require 'stoplight'
 require 'statsd-instrument'
 
 module Chitti
-  GlobalCallInterceptors = []
-
-  def self.add_call_interceptor(middleware_object)
-    Chitti::GlobalCallInterceptors.push(middleware_object)
-  end
-
   def self.get_hybrid_module(klass)
     rpc_descs = klass::Service.rpc_descs
     Module.new do
@@ -103,5 +97,3 @@ module Chitti
     klass.extend(get_hybrid_module(klass))
   end
 end
-
-require 'client_interceptors/grpc_error_client_interceptor'

@@ -1,17 +1,10 @@
-require_relative '../modules/health/health_service'
-require_relative '../logger/log'
-require_relative './rpc_server'
+require 'chitti/health/health_service_handler'
+require 'chitti/grpc_core/rpc_desc_patch'
 
 module Chitti
-  GlobalHandlerInterceptors = []
-
-  def self.add_handler_interceptor(middleware_object)
-    Chitti::GlobalHandlerInterceptors.push(middleware_object)
-  end
-
   class RpcServer < GRPC::RpcServer
     @@handler_interceptors = []
-    DEFAULT_HOST_PORT = '0.0.0.0:50052'
+    DEFAULT_HOST_PORT = "#{ENV['GRPC_HOST']}:#{ENV['GRPC_HOST']}" || '0.0.0.0:50052'
     def initialize(host_port:DEFAULT_HOST_PORT,
                    pool_size:DEFAULT_POOL_SIZE,
                    max_waiting_requests:DEFAULT_MAX_WAITING_REQUESTS,
@@ -36,5 +29,3 @@ module Chitti
     end
   end
 end
-
-require_relative '../server_middlewares/error_middleware'

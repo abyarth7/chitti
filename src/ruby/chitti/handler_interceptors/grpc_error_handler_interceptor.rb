@@ -1,10 +1,7 @@
 require 'grpc'
 require 'base64'
-require_relative '../logger/log'
-require_relative '../grpc_core/grpc_error'
-require_relative '../grpc_core/grpc_server'
 
-class ErrorMiddleware < GRPC::ServerInterceptor
+class GRPCErrorHandlerInterceptor < GRPC::ServerInterceptor
   def request_response(request:, call:, method:)
     begin
       response = yield
@@ -30,5 +27,3 @@ class ErrorMiddleware < GRPC::ServerInterceptor
     response
   end
 end
-
-Chitti.add_handler_interceptor(ErrorMiddleware.new)

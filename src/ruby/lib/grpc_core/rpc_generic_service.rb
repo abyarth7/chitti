@@ -1,12 +1,10 @@
 require 'stoplight'
 require 'statsd-instrument'
-require 'commons/response_pb'
 
 module Chitti
   GlobalCallInterceptors = []
 
   def self.add_call_interceptor(middleware_object)
-    puts 'comingggg'
     Chitti::GlobalCallInterceptors.push(middleware_object)
   end
 

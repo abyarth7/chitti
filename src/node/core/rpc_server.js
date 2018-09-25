@@ -1,9 +1,9 @@
 import grpc from 'grpc';
 import GRPCHealth from 'grpc-health-check/health';
 import GRPCHealthImplementation from '../grpc-health/health_implementation';
-import GRPCService from './grpc_service';
+import GRPCService from './generic_service';
 
-export default class GRPCServer extends grpc.Server {
+export default class RPCServer extends grpc.Server {
     constructor() {
         super();
         const healthImpl = new GRPCHealthImplementation();

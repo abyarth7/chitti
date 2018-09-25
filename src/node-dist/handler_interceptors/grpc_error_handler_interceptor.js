@@ -8,11 +8,11 @@ var _grpc = require('grpc');
 
 var _grpc2 = _interopRequireDefault(_grpc);
 
-var _grpc_middleware = require('../grpc-core/grpc_middleware');
+var _rpc_middleware = require('../core/rpc_middleware');
 
-var _grpc_middleware2 = _interopRequireDefault(_grpc_middleware);
+var _rpc_middleware2 = _interopRequireDefault(_rpc_middleware);
 
-var _grpc_custom_error = require('../grpc-core/grpc_custom_error');
+var _grpc_error = require('../core/grpc_error');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20,7 +20,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const logger = require('tracer').colorConsole();
 
-class GrpcErrorHandlerInterceptor extends _grpc_middleware2.default {
+class GrpcErrorHandlerInterceptor extends _rpc_middleware2.default {
     call(request, next) {
         return _asyncToGenerator(function* () {
             try {
@@ -34,15 +34,15 @@ class GrpcErrorHandlerInterceptor extends _grpc_middleware2.default {
                         package_prefix = `${par.name}.${package_prefix}`;
                     }
                     const error_handler = `${package_prefix}${err.constructor.name}`;
-                    if (_grpc_custom_error.GRPCErrorRegistry[error_handler]) {
+                    if (_grpc_error.GRPCErrorRegistry[error_handler]) {
                         let encodedError;
                         try {
-                            encodedError = _grpc_custom_error.GRPCErrorRegistry[error_handler].ctr.encode(err).finish().toString('base64');
+                            encodedError = _grpc_error.GRPCErrorRegistry[error_handler].ctr.encode(err).finish().toString('base64');
                         } catch (encodeError) {
                             throw encodeError;
                         }
                         const err_obj = new Error('GRPC Custom Error');
-                        err_obj.code = _grpc_custom_error.GRPCErrorRegistry[error_handler].code;
+                        err_obj.code = _grpc_error.GRPCErrorRegistry[error_handler].code;
                         err_obj.details = error_handler;
                         err_obj.metadata = err.metadata instanceof _grpc2.default.Metadata ? err.metadata : new _grpc2.default.Metadata();
                         const user_defined_error = {};

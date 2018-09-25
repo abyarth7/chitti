@@ -6,7 +6,7 @@ Chitti.add_handler_interceptor = function (grpcHandlerInterceptorObject) {
     global_handler_interceptors.push(grpcHandlerInterceptorObject);
 };
 
-export default class GRPCService {
+export default class GenericService {
     constructor(service, implementation) {
         if (service.constructor === this.constructor) return service;
         this.service = service.service;
@@ -32,7 +32,7 @@ export default class GRPCService {
             lodash.each(service.service, (attr, name) => {
                 impl[name] = Class.prototype[name] ? Class.prototype[name] : Class.prototype[attr.originalName];
             });
-            const grpc_service = new GRPCService(service, impl);
+            const grpc_service = new GenericService(service, impl);
             grpc_service.middlewares = [...service.Service.handler_interceptors];
             grpc_service.wrap();
             return grpc_service;

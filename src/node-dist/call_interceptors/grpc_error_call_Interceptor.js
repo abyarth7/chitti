@@ -12,7 +12,7 @@ var _common = require('grpc/src/common');
 
 var _common2 = _interopRequireDefault(_common);
 
-var _grpc_custom_error = require('../grpc-core/grpc_custom_error');
+var _grpc_error = require('../core/grpc_error');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42,8 +42,8 @@ function GRPCErrorCallInterceptor(options, nextCall) {
                             errobj = JSON.parse(status.metadata.get('grpc_custom_error')[0]);
                             status.metadata.remove('grpc_custom_error');
                         }
-                        if (errobj && _grpc_custom_error.GRPCErrorRegistry[errobj.type]) {
-                            const newError = new _grpc_custom_error.GRPCErrorRegistry[errobj.type].ctr(_grpc_custom_error.GRPCErrorRegistry[errobj.type].ctr.decode(Buffer.from(errobj.payload, 'base64')));
+                        if (errobj && _grpc_error.GRPCErrorRegistry[errobj.type]) {
+                            const newError = new _grpc_error.GRPCErrorRegistry[errobj.type].ctr(_grpc_error.GRPCErrorRegistry[errobj.type].ctr.decode(Buffer.from(errobj.payload, 'base64')));
                             newError.code = status.code;
                             newError.details = status.details;
                             newError.metadata = status.metadata;

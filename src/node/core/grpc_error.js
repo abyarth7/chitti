@@ -1,7 +1,7 @@
 import lodash from 'lodash';
 
 const GRPCErrorRegistry = {};
-const GRPCError = {};
+const Error = {};
 
 const GRPCRegisterErrors = (msg_classes, options = {}) => {
     const code = parseInt(options.code, 10);
@@ -18,10 +18,10 @@ const GRPCRegisterErrors = (msg_classes, options = {}) => {
     });
 };
 
-Object.assign(GRPCError, {
+Object.assign(Error, {
     enable(errorMessages, options) {
         return GRPCRegisterErrors(errorMessages, options);
     },
 });
 
-export { GRPCError, GRPCErrorRegistry };
+export { Error, GRPCErrorRegistry };

@@ -1,10 +1,10 @@
-import GRPCMiddleware from './grpc-core/grpc_middleware';
-import GRPCServer from './grpc-core/grpc_server';
-import RPCImport from './grpc-core/grpc_client';
-import { GRPCError } from './grpc-core/grpc_custom_error';
+import RPCMiddleware from './core/rpc_middleware';
+import RPCServer from './core/rpc_server';
+import RPCImport from './core/rpc_client';
+import { Error } from './core/grpc_error';
 import GrpcErrorHandlerInterceptor from './handler_interceptors/grpc_error_handler_interceptor';
 import GRPCErrorCallInterceptor from './call_interceptors/grpc_error_call_Interceptor';
-import Chitti from './grpc-core/chitti';
+import Chitti from './core/chitti';
 
 require('./handler_interceptors/grpc_error_handler_interceptor');
 
@@ -13,4 +13,4 @@ Chitti.add_handler_interceptor(new GrpcErrorHandlerInterceptor());
 Chitti.add_call_interceptor(GRPCErrorCallInterceptor);
 
 
-export { GRPCMiddleware, GRPCServer, RPCImport, GRPCError, Chitti };
+export { RPCMiddleware, RPCServer, RPCImport, Error, Chitti };

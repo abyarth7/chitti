@@ -3,21 +3,21 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Chitti = exports.GRPCError = exports.RPCImport = exports.GRPCServer = exports.GRPCMiddleware = undefined;
+exports.Chitti = exports.Error = exports.RPCImport = exports.RPCServer = exports.RPCMiddleware = undefined;
 
-var _grpc_middleware = require('./grpc-core/grpc_middleware');
+var _rpc_middleware = require('./core/rpc_middleware');
 
-var _grpc_middleware2 = _interopRequireDefault(_grpc_middleware);
+var _rpc_middleware2 = _interopRequireDefault(_rpc_middleware);
 
-var _grpc_server = require('./grpc-core/grpc_server');
+var _rpc_server = require('./core/rpc_server');
 
-var _grpc_server2 = _interopRequireDefault(_grpc_server);
+var _rpc_server2 = _interopRequireDefault(_rpc_server);
 
-var _grpc_client = require('./grpc-core/grpc_client');
+var _rpc_client = require('./core/rpc_client');
 
-var _grpc_client2 = _interopRequireDefault(_grpc_client);
+var _rpc_client2 = _interopRequireDefault(_rpc_client);
 
-var _grpc_custom_error = require('./grpc-core/grpc_custom_error');
+var _grpc_error = require('./core/grpc_error');
 
 var _grpc_error_handler_interceptor = require('./handler_interceptors/grpc_error_handler_interceptor');
 
@@ -27,7 +27,7 @@ var _grpc_error_call_Interceptor = require('./call_interceptors/grpc_error_call_
 
 var _grpc_error_call_Interceptor2 = _interopRequireDefault(_grpc_error_call_Interceptor);
 
-var _chitti = require('./grpc-core/chitti');
+var _chitti = require('./core/chitti');
 
 var _chitti2 = _interopRequireDefault(_chitti);
 
@@ -38,8 +38,8 @@ require('./handler_interceptors/grpc_error_handler_interceptor');
 _chitti2.default.add_handler_interceptor(new _grpc_error_handler_interceptor2.default());
 _chitti2.default.add_call_interceptor(_grpc_error_call_Interceptor2.default);
 
-exports.GRPCMiddleware = _grpc_middleware2.default;
-exports.GRPCServer = _grpc_server2.default;
-exports.RPCImport = _grpc_client2.default;
-exports.GRPCError = _grpc_custom_error.GRPCError;
+exports.RPCMiddleware = _rpc_middleware2.default;
+exports.RPCServer = _rpc_server2.default;
+exports.RPCImport = _rpc_client2.default;
+exports.Error = _grpc_error.Error;
 exports.Chitti = _chitti2.default;

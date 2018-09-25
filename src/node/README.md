@@ -3,25 +3,49 @@
 
 2. Import chitti in your service startup script.
 
-`import { GRPCServer, GRPCService } from 'chitti';`
+`import { GRPCServer } from 'chitti';`
 
 Create GRPCServer server object and add services to it.
 
 Get root path from json format of protobuf messages 
 
-```
-var root = protobuf.Root.fromJSON(require("./demp.json"));
-var grpc_root = grpc_js.grpc.loadObject(root);
+```js
+/*
+*Let proto file is 
+package test;
 
-@GRPCService.handle(grpc_root.demp.DempService)
-class TestImplementations {
+service TestService {
+  rpc hellogrpc (HelloRequest) returns (HelloResponse) {}
+}
+message HelloRequest {
+    string req_message = 1 ;
+}
+
+message HelloResponse {
+    string res_message = 1;
+}
+
+message CustomError {
+	string content = 1;
+	string id = 2;
+}
+
+}
+*/
+import { RPCImport, GRPCError } from 'chitti';
+const { TestService, HelloRequest, HelloResponse, CustomError } = RPCImport(require("./demo.json")).test;
+//enable errors
+GRPCError.enable([CError,CustomError],{code:502});
+
+class TestImplentations extends MyService.Service {
   getUserDetails(req) {
       console.log('req came getUserDetails ', req);
       return {};
   }
 }
 
-TestImplentations.addMiddleware(new DemoMiddleware());
+//service specific interceptor
+TestImplentations.add_handler_interceptor(new DemoMiddleware());
 const grpc_server = new GRPCServer();
 grpc_server.addService(TestImplentations);
 grpc_server.bind('0.0.0.0:5010', grpc.ServerCredentials.createInsecure());

@@ -1,6 +1,6 @@
 import grpc from 'grpc';
 import common from 'grpc/src/common';
-import { GRPCErrorRegistry } from '../grpc-core/grpc_custom_error';
+import { GRPCErrorRegistry } from '../core/grpc_error';
 
 
 const defaultCreateStatus = common.createStatusError;

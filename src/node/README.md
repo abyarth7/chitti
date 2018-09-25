@@ -10,6 +10,65 @@ Include  [chitti](https://github.com/NestAway/chitti) in your package.json as de
 ## 1. Compile your proto file for your service.
 This will be proto compile output for an sample grpc service
 
+```js
+{
+  "nested": {
+    "nodetestgrpc": {
+      "nested": {
+        "NodetestgrpcService": {
+          "methods": {
+            "hellogrpc": {
+              "requestType": "HelloRequest",
+              "responseType": "HelloResponse"
+            }
+          }
+        },
+        "HelloRequest": {
+          "fields": {
+            "req_message": {
+              "type": "string",
+              "id": 1
+            }
+          }
+        },
+        "HelloResponse": {
+          "fields": {
+            "res_message": {
+              "type": "string",
+              "id": 1
+            }
+          }
+        },
+        "CError": {
+          "fields": {
+            "content": {
+              "type": "string",
+              "id": 1
+            },
+            "id": {
+              "type": "string",
+              "id": 2
+            }
+          }
+        },
+        "CustomError": {
+          "fields": {
+            "one": {
+              "type": "string",
+              "id": 1
+            },
+            "two": {
+              "type": "string",
+              "id": 2
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 
 ## 2. include chitti in your service and 
    

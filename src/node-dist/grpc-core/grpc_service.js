@@ -8,11 +8,18 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _index = require('../index');
+var _chitti = require('./chitti');
+
+var _chitti2 = _interopRequireDefault(_chitti);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+const global_handler_interceptors = [];
+_chitti2.default.add_handler_interceptor = function (grpcHandlerInterceptorObject) {
+    global_handler_interceptors.push(grpcHandlerInterceptorObject);
+};
 
 class GRPCService {
     constructor(service, implementation) {
@@ -56,7 +63,7 @@ class GRPCService {
         var _this = this;
 
         _lodash2.default.each(this.implementation, (fn, name) => {
-            const middlewares = _lodash2.default.concat([..._index.Chitti.global_handler_interceptors], [...this.middlewares].reverse());
+            const middlewares = _lodash2.default.concat([...global_handler_interceptors], [...this.middlewares].reverse());
             const totalMiddleWares = middlewares.length;
             this.wrappedImplementation[name] = (() => {
                 var _ref = _asyncToGenerator(function* (request, callback) {

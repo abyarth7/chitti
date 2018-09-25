@@ -1,8 +1,12 @@
 import lodash from 'lodash';
 import grpc from 'grpc';
 import protobuf from 'protobufjs';
-import { Chitti }  from '../index';
+import Chitti from './chitti';
 
+const global_call_interceptors = [];
+Chitti.add_call_interceptor = function (grpcCallInterceptorObject) {
+    global_call_interceptors.push(grpcCallInterceptorObject);
+};
 const GRPCClient = grpcService => {
     if (!grpcService.isClientWrapped) {
         let isConfigChanged = true;
@@ -12,7 +16,7 @@ const GRPCClient = grpcService => {
                 constructor(...args) {
                     const num_args = args.length;
                     const interceptors = lodash.concat(
-                        [...Chitti.global_call_interceptors],
+                        [...global_call_interceptors],
                         [...ServiceClient.call_interceptors],
                     );
                     if (num_args === 2) args.push({ interceptors: [...interceptors] });

@@ -1,5 +1,10 @@
 import lodash from 'lodash';
-import { Chitti } from '../index';
+import Chitti from './chitti';
+
+const global_handler_interceptors = [];
+Chitti.add_handler_interceptor = function (grpcHandlerInterceptorObject) {
+    global_handler_interceptors.push(grpcHandlerInterceptorObject);
+};
 
 export default class GRPCService {
     constructor(service, implementation) {
@@ -42,7 +47,7 @@ export default class GRPCService {
     wrap() {
         lodash.each(this.implementation, (fn, name) => {
             const middlewares = lodash.concat(
-                [...Chitti.global_handler_interceptors],
+                [...global_handler_interceptors],
                 [...this.middlewares].reverse(),
             );
             const totalMiddleWares = middlewares.length;

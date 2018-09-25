@@ -16,10 +16,16 @@ var _protobufjs = require('protobufjs');
 
 var _protobufjs2 = _interopRequireDefault(_protobufjs);
 
-var _index = require('../index');
+var _chitti = require('./chitti');
+
+var _chitti2 = _interopRequireDefault(_chitti);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const global_call_interceptors = [];
+_chitti2.default.add_call_interceptor = function (grpcCallInterceptorObject) {
+    global_call_interceptors.push(grpcCallInterceptorObject);
+};
 const GRPCClient = grpcService => {
     if (!grpcService.isClientWrapped) {
         let isConfigChanged = true;
@@ -28,7 +34,7 @@ const GRPCClient = grpcService => {
             [serviceName]: class extends grpcService {
                 constructor(...args) {
                     const num_args = args.length;
-                    const interceptors = _lodash2.default.concat([..._index.Chitti.global_call_interceptors], [...ServiceClient.call_interceptors]);
+                    const interceptors = _lodash2.default.concat([...global_call_interceptors], [...ServiceClient.call_interceptors]);
                     if (num_args === 2) args.push({ interceptors: [...interceptors] });else if (num_args === 3 && args[2] instanceof Object) {
                         if (!Array.isArray(args[2].interceptors)) args[2].interceptors = [];
                         args[2].interceptors = _lodash2.default.concat(args[2].interceptors, _lodash2.default.reverse(ServiceClient.call_interceptors));

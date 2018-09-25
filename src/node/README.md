@@ -1,127 +1,117 @@
-## Implementation
-1. Include  [chitti](https://github.com/NestAway/chitti) in your package.json as dependencies and run `npm install` to install package.
+Chitti wraps grpc to provide a simpler, generic and extensible way to implement remote proceedure calls.
 
-2. Import chitti in your service startup script.
 
-`import { GRPCServer } from 'chitti';`
+# Installation
+Include  [chitti](https://github.com/NestAway/chitti) in your package.json as dependencies and run `npm install` to install package.
 
-Create GRPCServer server object and add services to it.
 
-Get root path from json format of protobuf messages 
+# Usage
+
+## 1. Compile your proto file for your service.
+This will be proto compile output for an sample grpc service
+
+
+## 2. include chitti in your service and 
+   
+do rpc_import for your service 
 
 ```js
-/*
-*Let proto file is 
-package test;
 
-service TestService {
-  rpc hellogrpc (HelloRequest) returns (HelloResponse) {}
-}
-message HelloRequest {
-    string req_message = 1 ;
-}
+import { RPCImport } from 'chitti';
+const { TestgrpcService, HelloRequest, HelloResponse, CustomError } = RPCImport(require("./demo.json")).Testgrpc;
 
-message HelloResponse {
-    string res_message = 1;
-}
-
-message CustomError {
-	string content = 1;
-	string id = 2;
-}
-
-}
-*/
-import { RPCImport, GRPCError } from 'chitti';
-const { TestService, HelloRequest, HelloResponse, CustomError } = RPCImport(require("./demo.json")).test;
-//enable errors
-GRPCError.enable([CError,CustomError],{code:502});
-
-class TestImplentations extends MyService.Service {
-  getUserDetails(req) {
-      console.log('req came getUserDetails ', req);
-      return {};
-  }
-}
-
-//service specific interceptor
-TestImplentations.add_handler_interceptor(new DemoMiddleware());
-const grpc_server = new GRPCServer();
-grpc_server.addService(TestImplentations);
-grpc_server.bind('0.0.0.0:5010', grpc.ServerCredentials.createInsecure());
-grpc_server.start();
 ``` 
 
-3. Enabling Custom error protobuf message to service and client
-  for Example Protobuf message
-    ```
-    message CustomError{
-      int32 cErrorCode = 1;
-      string cErrorDetails = 2;
-      string AdditionalInfo = 3;
+## 3. Implementing service handlers
+
+Implementation of the rpc methods
+
+```js
+class MyService extends TestgrpcService.Service {
+    async hellogrpc(req) {
+        return { res_message: 'Hello Grpc !' };
     }
-    ```
-  enable protobuf message object in both service and client
+}
+```
 
-    ```
-    import { GRPCError } from 'chitti';
-    const root = protobuf.Root.fromJSON(require("./demo.json"));
+## 4. Starting the server
 
-    const customError = root.lookupType('CustomError');
-    CustomError = GRPCError.enable(customError, { code:502 })
- 
-    ```
-  Throwing a custom error Protobuf Message
-   ```
-    class TestImplementations {
-        async hellogrpc(req) {
-          const obj = {cErrorCode: 502, cErrorDetails: 'throwing CustomError', AdditionalInfo: 'Thankyou for using'};
-          const errobj =  new CustomError(obj);
-          throw errobj;
-        },
+```js
+
+import { RPCServer } from 'chitti';
+const grpc_server = new RPCServer();
+grpc_server.addService(MyService1);
+grpc_server.bind('0.0.0.0:8080', grpc.ServerCredentials.createInsecure());
+grpc_server.start();
+
+```
+
+## 5. Calling rpc methods
+
+```js
+
+// global config
+
+TestgrpcService.host = 'localhost';
+TestgrpcService.port = 8080;
+
+// Call the rpc method
+
+(async () => await testService1.hellogrpc1({ res_messsage: '' });)();
+
+```
+
+## 6. Adding Interceptors to client and server
+
+We can add client and server interceptors while creating the server and client stub by passing interceptors array as arguments.
+
+By using chitti we provide global and service level interceptors for client and server
+
+By default we added one handler interceptors(custom_error_handler_interceptor) and one call interceptor(custom_error_call_interceptor)
+
+```js
+
+//server interceptors
+
+MyService.add_handler_interceptor(new TestHandleInterceptor1()); // global
+Chitti.add_handler_interceptor(new TestHandleInterceptor2());  //service specific
+
+//client interceptors
+
+Chitti.add_call_interceptor(TestCallInterceptor2); //global
+TestgrpcService.add_call_interceptor(TestCallInterceptor1); // service specific
+
+```
+
+Example Implementation of server Interceptor
+
+```js
+import { RPCMiddleware } from 'chitti';
+class TestHandleInterceptor extends RPCMiddleware {
+    async call(request, next) {
+        try {
+            const response = await next(request);
+            //write  your own logic
+            return response;
+        }
+        catch (err) {
+            throw err;
+        }
     }
+}
 
-   ```
-4. when clients are making GRPC calls to the server. They don't need to include callback.
-    Import chitti in your client script.
-    ```
-    import { GRPCClient } from 'chitti'; 
-    ```
-    Before creating stub promisify protobuf messages which u want to make grpc calls to server
-    ```
-    const DemoService = GRPCClient(testProto.demo.DemoService);
-    ```
-    Set host and port on the service
-    ```
-    DemoService.host = 'localhost';
-    DemoService.port = 50052;
-    response = await DemoService.hellogrpc({reqMesssage:'hi'});
-    ```
-
-5. Adding server middleware
-```
-  import { GRPCMiddleware, GRPCService } from 'chitti'; 
-  class DemoMiddleware extends GRPCMiddleware {
-      async call(request, next) {
-          try {
-              const response = await next(request);
-              console.log(response);
-              return response;
-          }
-          catch (err) {
-              throw err;
-          }
-      }
-  }
-
-  GRPCService.addmiddleware(new DemoMiddleware());
+MyService.add_handler_interceptor(new TestHandleInterceptor()); // adding global
+Chitti.add_handler_interceptor(new TestHandleInterceptor());  // adding to specific service
 
 ```
-6. Adding Client interceptor
 
-```
+
+
+Example Implementation of client Interceptor
+
+```js
 import grpc from 'grpc';
-function DemoClientInterceptor(options, nextCall) {
+function TestCallInterceptor(options, nextCall) {
     let savedMessage;
     let savedMessageNext;
     const requester = {
@@ -132,7 +122,7 @@ function DemoClientInterceptor(options, nextCall) {
                     savedMessageNext = nextMessage;
                 },
                 onReceiveStatus(status, nextStatus) {
-                    //u can implement your custom logic 
+                    savedMessageNext(savedMessage);
                     nextStatus(status);
                 },
             };
@@ -142,5 +132,68 @@ function DemoClientInterceptor(options, nextCall) {
     return new grpc.InterceptingCall(nextCall(options), requester);
 }
 
-DemoService.interceptors = [new DemoClientInterceptor()];
+Chitti.add_call_interceptor(TestCallInterceptor); // adding globally
+TestgrpcService.add_call_interceptor(TestCallInterceptor); // adding to specific service 
+
+
+```
+
+## 7. Custom Error Implementation
+
+RPCs provide a way to invoke remote methods as if they are locally available. However, this paradigm usally breaks down when it comes to handling errors. Chitti provides a local-like error handling model where service handlers throw custom exceptions and clients can handle those exceptions.
+
+If the custom error is
+
+```protobuf
+package Testgrpc;
+
+message CustomError {
+  string custom = 1;
+}
+
+message CError {
+  string id = 1;
+}
+```
+
+you have to classify the above proto message as an error:
+
+let proto file compiled into 'bundle.json'
+
+```js
+const { CError, CustomError } = RPCImport(require("./bundle.json")).Testgrpc;
+import { Error } from 'chitt';
+//along with status code default it takes 500
+Error.enable([CError,CustomError],{code:502});
+
+```
+
+Throwing an Error in your handlers:
+
+```js
+
+class MyService extends TestgrpcService.Service {
+    async hellogrpc(req) {
+        const obj = { one: 'thank you for using error', two: '1' };
+        const errobj =  new CustomError(obj);
+        throw errobj;
+    }
+}
+
+```
+
+Catching the error at client end:
+
+```js
+
+(async () => {
+    try {
+        const response1 = await TestService.hellogrpc({ res_messsage: '' });
+        console.log(response);
+    }
+    catch (error) {
+        console.log(error);
+    }
+})();
+
 ```

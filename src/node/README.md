@@ -207,11 +207,13 @@ If the custom error is
 package Testgrpc;
 
 message CustomError {
-  string custom = 1;
+    string one = 1;
+    string two = 2;
 }
 
 message CError {
-  string id = 1;
+	string content = 1;
+	string id = 2;
 }
 ```
 

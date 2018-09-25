@@ -2,7 +2,7 @@ import GRPCMiddleware from './grpc-core/grpc_middleware';
 import GRPCServer from './grpc-core/grpc_server';
 import RPCImport from './grpc-core/grpc_client';
 import { GRPCError } from './grpc-core/grpc_custom_error';
-import GrpcErrorHandlerMiddleware from './handler_interceptors/grpc_error_handler_interceptor';
+import GrpcErrorHandlerInterceptor from './handler_interceptors/grpc_error_handler_interceptor';
 import GRPCErrorCallInterceptor from './call_interceptors/grpc_error_call_Interceptor';
 
 require('./handler_interceptors/grpc_error_handler_interceptor');
@@ -17,7 +17,7 @@ class Chitti {
         this.global_call_interceptors.push(grpcInterceptorObject);
     }
 }
-Chitti.add_handler_interceptor(new GrpcErrorHandlerMiddleware());
+Chitti.add_handler_interceptor(new GrpcErrorHandlerInterceptor());
 Chitti.add_call_interceptors(GRPCErrorCallInterceptor);
 
 

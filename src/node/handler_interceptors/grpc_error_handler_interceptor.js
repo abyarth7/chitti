@@ -4,7 +4,7 @@ import { GRPCErrorRegistry } from '../grpc-core/grpc_custom_error';
 
 const logger = require('tracer').colorConsole();
 
-class GrpcErrorHandlerMiddleware extends GRPCMiddleware {
+class GrpcErrorHandlerInterceptor extends GRPCMiddleware {
     async call(request, next) {
         try {
             const response = await next(request);
@@ -42,4 +42,4 @@ class GrpcErrorHandlerMiddleware extends GRPCMiddleware {
     }
 }
 
-export default GrpcErrorHandlerMiddleware;
+export default GrpcErrorHandlerInterceptor;

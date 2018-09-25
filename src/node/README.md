@@ -247,7 +247,7 @@ Catching the error at client end:
 
 (async () => {
     try {
-        const response1 = await TestService.hellogrpc({ res_messsage: '' });
+        const response = await TestService.hellogrpc({ res_messsage: '' });
         console.log(response);
     }
     catch (error) {

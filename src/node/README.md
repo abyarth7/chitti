@@ -80,7 +80,7 @@ import { RPCImport } from 'chitti';
 const { TestgrpcService, HelloRequest, HelloResponse, CustomError } = RPCImport(require("./demo.json")).Testgrpc;
 
 ``` 
-
+Note: for both service and client same instance of RPCImport(require("./demo.json") need to be used.
 ## 3. Implementing service handlers
 
 Implementation of the rpc methods

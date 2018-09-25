@@ -82,7 +82,7 @@ end
 ```ruby
 # global config
 Testgrpc::TestgrpcService.host = "0.0.0.0"
-Testgrpc::TestgrpcService.port = "8008"
+Testgrpc::TestgrpcService.port = "50052"
 
 # Call the rpc method
 Testgrpc::TestgrpcService.hellogrpc(req)
@@ -102,14 +102,14 @@ By default we added one handler interceptors(custom_error_handler_interceptor) a
 
 #client interceptors:
 
-global -> Chitti.add_call_interceptor()   #global
-service specific -> MyService.add_call_interceptor()  #service_specific
+Chitti.add_call_interceptor()   #global
+MyService.add_call_interceptor()  #service_specific
 
 
 #server interceptors:
 
 Chitti.add_handler_interceptor()  #global
-service specific -> MyService.add_handler_interceptor() #service_specific
+MyService.add_handler_interceptor() #service_specific
 
 ```
 
@@ -149,7 +149,7 @@ Testgrpc::TestgrpcService.add_call_interceptor(TaskFutureClientInterceptor.new) 
 
 ```
 
-Order of execution of interceptors will be  Global followed by sevice specific
+Order of execution of interceptors will be  Global followed by service specific
 
 
 ## 6. Custom Error Implementation

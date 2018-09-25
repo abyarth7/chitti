@@ -222,7 +222,7 @@ you have to classify the above proto message as an error:
 let proto file compiled into 'bundle.json'
 
 ```js
-const { CError, CustomError } = RPCImport(require("./bundle.json")).Testgrpc;
+//get  CError, CustomError from RPCImport
 import { Error } from 'chitt';
 //along with status code default it takes 500
 Error.enable([CError,CustomError],{code:502});

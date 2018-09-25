@@ -32,11 +32,12 @@ function GRPCErrorCallInterceptor(options, nextCall) {
         start(metadata, listener, next) {
             const new_listener = {
                 onReceiveMessage(message, nextMessage) {
+                    console.log('2 enters global GRPCErrorCallInterceptor');
                     savedMessage = message;
                     savedMessageNext = nextMessage;
                 },
                 onReceiveStatus(status, nextStatus) {
-                    console.log(1);
+                    console.log('2 exits global GRPCErrorCallInterceptor');
                     if (status.code !== _grpc2.default.status.OK) {
                         let errobj;
                         if (status.metadata.get('grpc_custom_error')[0]) {

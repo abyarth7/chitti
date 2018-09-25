@@ -27,7 +27,10 @@ export default class GRPCService {
             lodash.each(service.service, (attr, name) => {
                 impl[name] = Class.prototype[name] ? Class.prototype[name] : Class.prototype[attr.originalName];
             });
-            return new GRPCService(service, impl);
+            const grpc_service = new GRPCService(service, impl);
+            grpc_service.middlewares = [...service.Service.handler_interceptors];
+            grpc_service.wrap();
+            return grpc_service;
         };
     }
 
@@ -38,7 +41,10 @@ export default class GRPCService {
 
     wrap() {
         lodash.each(this.implementation, (fn, name) => {
-            const middlewares = lodash.concat([...Chitti.global_handle_interceptors].reverse(), [...this.middlewares].reverse());
+            const middlewares = lodash.concat(
+                [...Chitti.global_handler_interceptors],
+                [...this.middlewares].reverse(),
+            );
             const totalMiddleWares = middlewares.length;
             this.wrappedImplementation[name] = async (request, callback) => {
                 let index = 0;

@@ -28,17 +28,15 @@ const GRPCClient = grpcService => {
             [serviceName]: class extends grpcService {
                 constructor(...args) {
                     const num_args = args.length;
-                    if (num_args === 2) args.push({ interceptors: ServiceClient.globalInterceptors.reverse() });else if (num_args === 3 && args[2] instanceof Object) {
+                    const interceptors = _lodash2.default.concat([..._index.Chitti.global_call_interceptors], [...ServiceClient.call_interceptors]);
+                    if (num_args === 2) args.push({ interceptors: [...interceptors] });else if (num_args === 3 && args[2] instanceof Object) {
                         if (!Array.isArray(args[2].interceptors)) args[2].interceptors = [];
-                        args[2].interceptors = _lodash2.default.concat(args[2].interceptors, _lodash2.default.reverse(ServiceClient.globalInterceptors));
+                        args[2].interceptors = _lodash2.default.concat(args[2].interceptors, _lodash2.default.reverse(ServiceClient.call_interceptors));
                     }
                     super(...args);
                 }
                 static add_call_interceptor(grpcInterceptorObject) {
-                    this.globalInterceptors.push(grpcInterceptorObject);
-                }
-                static add_handle_interceptor(grpcInterceptorObject) {
-                    _index.Chitti.global_handle_interceptors.push(grpcInterceptorObject);
+                    this.call_interceptors.push(grpcInterceptorObject);
                 }
                 static set host(host) {
                     if (!host) throw new Error('Host is required');
@@ -63,14 +61,12 @@ const GRPCClient = grpcService => {
         }[serviceName];
         ServiceClient.Service = { [serviceName]: class {} }[serviceName];
         ServiceClient.Service.ServiceClient = ServiceClient;
-        ServiceClient.Service.add_handle_interceptor = function (grpcInterceptorObject) {
-            _index.Chitti.global_handle_interceptors.push(grpcInterceptorObject);
-        };
-        ServiceClient.Service.add_call_interceptor = function (grpcInterceptorObject) {
-            _index.Chitti.global_call_interceptors.push(grpcInterceptorObject);
+        ServiceClient.Service.handler_interceptors = [];
+        ServiceClient.Service.add_handler_interceptor = function (grpcInterceptorObject) {
+            ServiceClient.Service.handler_interceptors.push(grpcInterceptorObject);
         };
         ServiceClient.envVars = {};
-        ServiceClient.globalInterceptors = _index.Chitti.global_call_interceptors;
+        ServiceClient.call_interceptors = [];
         ServiceClient.isClientWrapped = true;
         ServiceClient._getStaticWrapper = function (methodName) {
             return function (...args) {

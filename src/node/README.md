@@ -139,12 +139,13 @@ By default we added one handler interceptors(custom_error_handler_interceptor) a
 
 //server interceptors
 
-MyService.add_handler_interceptor(new TestHandleInterceptor1()); // global
-Chitti.add_handler_interceptor(new TestHandleInterceptor2());  //service specific
+MyService.add_handler_interceptor(new TestHandleInterceptor1()); // service specific
 
+Chitti.add_handler_interceptor(new TestHandleInterceptor2());  // global
 //client interceptors
 
 Chitti.add_call_interceptor(TestCallInterceptor2); //global
+
 TestgrpcService.add_call_interceptor(TestCallInterceptor1); // service specific
 
 ```
@@ -152,6 +153,7 @@ TestgrpcService.add_call_interceptor(TestCallInterceptor1); // service specific
 Example Implementation of server Interceptor
 
 ```js
+
 import { RPCMiddleware } from 'chitti';
 class TestHandleInterceptor extends RPCMiddleware {
     async call(request, next) {
@@ -167,6 +169,7 @@ class TestHandleInterceptor extends RPCMiddleware {
 }
 
 Chitti.add_handler_interceptor(new TestHandleInterceptor());  // adding globally
+
 MyService.add_handler_interceptor(new TestHandleInterceptor()); // adding to specific service
 
 ```
@@ -188,6 +191,7 @@ function TestCallInterceptor(options, nextCall) {
                     savedMessageNext = nextMessage;
                 },
                 onReceiveStatus(status, nextStatus) {
+                  //impliment your own custom logic 
                     savedMessageNext(savedMessage);
                     nextStatus(status);
                 },
@@ -199,8 +203,8 @@ function TestCallInterceptor(options, nextCall) {
 }
 
 Chitti.add_call_interceptor(TestCallInterceptor); // adding globally
-TestgrpcService.add_call_interceptor(TestCallInterceptor); // adding to specific service 
 
+TestgrpcService.add_call_interceptor(TestCallInterceptor); // adding to specific service 
 
 ```
 
@@ -208,7 +212,7 @@ TestgrpcService.add_call_interceptor(TestCallInterceptor); // adding to specific
 
 RPCs provide a way to invoke remote methods as if they are locally available. However, this paradigm usally breaks down when it comes to handling errors. Chitti provides a local-like error handling model where service handlers throw custom exceptions and clients can handle those exceptions.
 
-If the custom error is
+If the custom errors are
 
 ```protobuf
 package Testgrpc;
@@ -226,13 +230,21 @@ message CError {
 
 you have to classify the above proto message as an error:
 
-
 ```js
 import { Error } from 'chitt';
 
 //get  CError, CustomError from RPCImport
 //along with status code default it takes 500
+//can be error enabled all protobuf messages with same status code at once 
+
+Error.enable([CError,CustomError]);// default code = 500
+// 
+or
 Error.enable([CError,CustomError],{code:502});
+// or
+Error.enable([CustomError],{code:502});
+Error.enable([CError],{code:504});
+
 
 ```
 

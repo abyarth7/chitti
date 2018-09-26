@@ -9,17 +9,19 @@ Include  [chitti](https://github.com/NestAway/chitti) in your package.json as de
 
 ## 1. Compile your proto file for your service.
 This will be proto compile output for an sample grpc service
+// test.json
 
 ```js
+
 {
   "nested": {
-    "nodetestgrpc": {
+    "testgrpc": {
       "nested": {
-        "NodetestgrpcService": {
+        "TestgrpcService": {
           "methods": {
             "hellogrpc": {
-              "requestType": "HelloRequest",
-              "responseType": "HelloResponse"
+              "requestType": "HelloResponse",
+              "responseType": "HelloRequest"
             }
           }
         },
@@ -67,6 +69,8 @@ This will be proto compile output for an sample grpc service
     }
   }
 }
+  
+ 
 ```
 
 
@@ -77,9 +81,10 @@ do rpc_import for your service
 ```js
 
 import { RPCImport } from 'chitti';
-const { TestgrpcService, HelloRequest, HelloResponse, CustomError } = RPCImport(require("./demo.json")).Testgrpc;
+const { TestgrpcService, HelloRequest, HelloResponse, CError, CustomError } = RPCImport(require("./demo.json")).testgrpc;
 
 ``` 
+Note: for both service and client same instance of RPCImport(require("./demo.json") need to be used.
 
 ## 3. Implementing service handlers
 
@@ -98,8 +103,11 @@ class MyService extends TestgrpcService.Service {
 ```js
 
 import { RPCServer } from 'chitti';
+//create server
 const grpc_server = new RPCServer();
-grpc_server.addService(MyService1);
+
+// adding rpc methods to service
+grpc_server.addService(MyService);
 grpc_server.bind('0.0.0.0:8080', grpc.ServerCredentials.createInsecure());
 grpc_server.start();
 
@@ -116,7 +124,7 @@ TestgrpcService.port = 8080;
 
 // Call the rpc method
 
-(async () => await testService1.hellogrpc1({ res_messsage: '' });)();
+(async () => await testService.hellogrpc({ res_messsage: '' });)();
 
 ```
 
@@ -159,8 +167,8 @@ class TestHandleInterceptor extends RPCMiddleware {
     }
 }
 
-MyService.add_handler_interceptor(new TestHandleInterceptor()); // adding global
-Chitti.add_handler_interceptor(new TestHandleInterceptor());  // adding to specific service
+Chitti.add_handler_interceptor(new TestHandleInterceptor());  // adding globally
+MyService.add_handler_interceptor(new TestHandleInterceptor()); // adding to specific service
 
 ```
 
@@ -207,28 +215,32 @@ If the custom error is
 package Testgrpc;
 
 message CustomError {
-  string custom = 1;
+    string one = 1;
+    string two = 2;
 }
 
 message CError {
-  string id = 1;
+	string content = 1;
+	string id = 2;
 }
 ```
 
 you have to classify the above proto message as an error:
 
-let proto file compiled into 'bundle.json'
 
 ```js
-const { CError, CustomError } = RPCImport(require("./bundle.json")).Testgrpc;
+
 import { Error } from 'chitt';
+
+//get  CError, CustomError from RPCImport
 //along with status code default it takes 500
 Error.enable([CError,CustomError],{code:502});
 
 ```
 
-Throwing an Error in your handlers:
+Throwing an Error from handlers:
 
+Note: Before throw a protobuf messages ensure it is Error enabled
 ```js
 
 class MyService extends TestgrpcService.Service {
@@ -247,7 +259,7 @@ Catching the error at client end:
 
 (async () => {
     try {
-        const response1 = await TestService.hellogrpc({ res_messsage: '' });
+        const response = await TestService.hellogrpc({ res_messsage: '' });
         console.log(response);
     }
     catch (error) {

@@ -99,7 +99,7 @@ class MyService extends TestgrpcService.Service {
 
 import { RPCServer } from 'chitti';
 const grpc_server = new RPCServer();
-grpc_server.addService(MyService1);
+grpc_server.addService(MyService);
 grpc_server.bind('0.0.0.0:8080', grpc.ServerCredentials.createInsecure());
 grpc_server.start();
 

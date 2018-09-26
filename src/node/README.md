@@ -116,7 +116,7 @@ TestgrpcService.port = 8080;
 
 // Call the rpc method
 
-(async () => await testService.hellogrpc1({ res_messsage: '' });)();
+(async () => await testService.hellogrpc({ res_messsage: '' });)();
 
 ```
 

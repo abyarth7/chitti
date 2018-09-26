@@ -85,7 +85,6 @@ const { TestgrpcService, HelloRequest, HelloResponse, CError, CustomError } = RP
 
 ``` 
 Note: for both service and client same instance of RPCImport(require("./demo.json") need to be used.
-
 ## 3. Implementing service handlers
 
 Implementation of the rpc methods
@@ -229,7 +228,6 @@ you have to classify the above proto message as an error:
 
 
 ```js
-
 import { Error } from 'chitt';
 
 //get  CError, CustomError from RPCImport

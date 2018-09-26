@@ -159,8 +159,8 @@ class TestHandleInterceptor extends RPCMiddleware {
     }
 }
 
-MyService.add_handler_interceptor(new TestHandleInterceptor()); // adding global
-Chitti.add_handler_interceptor(new TestHandleInterceptor());  // adding to specific service
+Chitti.add_handler_interceptor(new TestHandleInterceptor());  // adding globally
+MyService.add_handler_interceptor(new TestHandleInterceptor()); // adding to specific service
 
 ```
 

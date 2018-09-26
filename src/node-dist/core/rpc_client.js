@@ -46,9 +46,9 @@ const GRPCClient = grpcService => {
                 }
                 static set host(host) {
                     if (!host) throw new Error('Host is required');
-                    const splitHost = host.split(':');
-                    this.envVars.host = splitHost[0];
-                    if (splitHost[1]) this.envVars.port = splitHost[1];
+                    const [Host, Port] = host.split(':');
+                    this.envVars.host = Host;
+                    if (Port) this.envVars.port = Port;
                     isConfigChanged = true;
                 }
                 static get host() {

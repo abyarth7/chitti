@@ -139,9 +139,9 @@ By default we added one handler interceptors(custom_error_handler_interceptor) a
 
 //server interceptors
 
-MyService.add_handler_interceptor(new TestHandleInterceptor1()); // service specific
-
 Chitti.add_handler_interceptor(new TestHandleInterceptor2());  // global
+
+MyService.add_handler_interceptor(new TestHandleInterceptor1()); // service specific
 //client interceptors
 
 Chitti.add_call_interceptor(TestCallInterceptor2); //global
@@ -238,8 +238,7 @@ import { Error } from 'chitt';
 //can be error enabled all protobuf messages with same status code at once 
 
 Error.enable([CError,CustomError]);// default code = 500
-// 
-or
+// or
 Error.enable([CError,CustomError],{code:502});
 // or
 Error.enable([CustomError],{code:502});

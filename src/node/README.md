@@ -9,7 +9,7 @@ Include  [chitti](https://github.com/NestAway/chitti) in your package.json as de
 
 ## 1. Compile your proto file for your service.
 This will be proto compile output for an sample grpc service
-// test.json
+// demo.json
 
 ```js
 

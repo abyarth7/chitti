@@ -8,22 +8,9 @@ var _grpc = require('grpc');
 
 var _grpc2 = _interopRequireDefault(_grpc);
 
-var _common = require('grpc/src/common');
-
-var _common2 = _interopRequireDefault(_common);
-
 var _grpc_error = require('../core/grpc_error');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const defaultCreateStatus = _common2.default.createStatusError;
-
-_common2.default.createStatusError = function (status) {
-    if (status.stack) {
-        return status;
-    }
-    return defaultCreateStatus(status);
-};
 
 function GRPCErrorCallInterceptor(options, nextCall) {
     let savedMessage;

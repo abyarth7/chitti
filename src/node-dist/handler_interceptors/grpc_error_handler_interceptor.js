@@ -8,9 +8,9 @@ var _grpc = require('grpc');
 
 var _grpc2 = _interopRequireDefault(_grpc);
 
-var _rpc_middleware = require('../core/rpc_middleware');
+var _handler_interceptor = require('../core/handler_interceptor');
 
-var _rpc_middleware2 = _interopRequireDefault(_rpc_middleware);
+var _handler_interceptor2 = _interopRequireDefault(_handler_interceptor);
 
 var _grpc_error = require('../core/grpc_error');
 
@@ -20,7 +20,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const logger = require('tracer').colorConsole();
 
-class GrpcErrorHandlerInterceptor extends _rpc_middleware2.default {
+class GRPCErrorHandlerInterceptor extends _handler_interceptor2.default {
     call(request, next) {
         return _asyncToGenerator(function* () {
             try {
@@ -58,4 +58,4 @@ class GrpcErrorHandlerInterceptor extends _rpc_middleware2.default {
     }
 }
 
-exports.default = GrpcErrorHandlerInterceptor;
+exports.default = GRPCErrorHandlerInterceptor;

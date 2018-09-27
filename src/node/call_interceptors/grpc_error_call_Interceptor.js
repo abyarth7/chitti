@@ -1,16 +1,5 @@
 import grpc from 'grpc';
-import common from 'grpc/src/common';
 import { GRPCErrorRegistry } from '../core/grpc_error';
-
-
-const defaultCreateStatus = common.createStatusError;
-
-common.createStatusError = function (status) {
-    if (status.stack) {
-        return status;
-    }
-    return defaultCreateStatus(status);
-};
 
 function GRPCErrorCallInterceptor(options, nextCall) {
     let savedMessage;

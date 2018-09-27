@@ -1,13 +1,14 @@
 import lodash from 'lodash';
 import grpc from 'grpc';
-import protobuf from 'protobufjs';
 import Chitti from './chitti';
 
 const global_call_interceptors = [];
-Chitti.add_call_interceptor = function (grpcCallInterceptorObject) {
-    global_call_interceptors.push(grpcCallInterceptorObject);
+
+Chitti.add_call_interceptor = CallInterceptor => {
+    global_call_interceptors.push(CallInterceptor);
 };
-const GRPCClient = grpcService => {
+
+const RPCClient = grpcService => {
     if (!grpcService.isClientWrapped) {
         let isConfigChanged = true;
         const serviceName = _getServiceName(grpcService);
@@ -29,25 +30,30 @@ const GRPCClient = grpcService => {
                     }
                     super(...args);
                 }
-                static add_call_interceptor(grpcInterceptorObject) {
-                    this.call_interceptors.push(grpcInterceptorObject);
+
+                static add_call_interceptor(CallInterceptor) {
+                    this.call_interceptors.push(CallInterceptor);
                 }
-                static set host(host) {
-                    if (!host) throw new Error('Host is required');
-                    const [Host, Port] = host.split(':');
-                    this.envVars.host = Host;
-                    if (Port) this.envVars.port = Port;
+
+                static set host(hostStr) {
+                    if (!hostStr) throw new Error('Host is required');
+                    const [host, port] = hostStr.split(':');
+                    this.envVars.host = host;
+                    if (port) this.envVars.port = port;
                     isConfigChanged = true;
                 }
+
                 static get host() {
                     return this.envVars.host;
                 }
+
                 static set port(port) {
                     if (port) {
                         this.envVars.port = port;
                         isConfigChanged = true;
                     }
                 }
+
                 static get port() {
                     return this.envVars.port;
                 }
@@ -56,8 +62,8 @@ const GRPCClient = grpcService => {
         ServiceClient.Service = { [serviceName]: class {} }[serviceName];
         ServiceClient.Service.ServiceClient = ServiceClient;
         ServiceClient.Service.handler_interceptors = [];
-        ServiceClient.Service.add_handler_interceptor = function (grpcInterceptorObject) {
-            ServiceClient.Service.handler_interceptors.push(grpcInterceptorObject);
+        ServiceClient.Service.add_handler_interceptor = HandlerInterceptorClass => {
+            ServiceClient.Service.handler_interceptors.push(new HandlerInterceptorClass());
         };
         ServiceClient.envVars = {};
         ServiceClient.call_interceptors = [];
@@ -94,53 +100,10 @@ const GRPCClient = grpcService => {
     return grpcService;
 };
 
-const RPCImport = protoJSON => {
-    const proto_root = protobuf.Root.fromJSON(protoJSON);
-    const grpc_root = grpc.loadObject(proto_root);
-    const myService = getProtoClasses(proto_root, grpc_root);
-    return myService;
-};
-
 function _getServiceName(grpcService) {
     const samplePath = grpcService.service[Object.keys(grpcService.service)[0]].path;
     const fullName = samplePath.substring(samplePath.indexOf('/') + 1, samplePath.lastIndexOf('/'));
     return fullName.substring(fullName.lastIndexOf('.') + 1);
 }
 
-function getProtoClasses(proto_root, package_rpc_root, path) {
-    const myService = {};
-    lodash.each(package_rpc_root, (attr, name) => {
-        const attrs_length = Object.keys(attr).length;
-        if (attr.service) {
-            myService[name] = GRPCClient(attr);
-        }
-        else if (attrs_length === 0) {
-            try {
-                const msg_class = proto_root.lookupType(`${path ? `${path}.` : ''}${name}`);
-                myService[name] = {
-                    [msg_class.ctor.name]: class extends msg_class.ctor {
-                        constructor(...args) {
-                            super(...args);
-                            if (this.constructor.isErrorEnabled) {
-                                Error.captureStackTrace(this, this.constructor);
-                            }
-                        }
-
-                        toString() {
-                            return this.constructor.name;
-                        }
-                    },
-                }[msg_class.ctor.name];
-            }
-            catch (_) {
-                myService[name] = {};
-            }
-        }
-        else if (attrs_length > 0) {
-            myService[name] = getProtoClasses(proto_root, attr, `${path ? `${path}.` : ''}${name}`);
-        }
-    });
-    return myService;
-}
-
-export default RPCImport;
+export default RPCClient;

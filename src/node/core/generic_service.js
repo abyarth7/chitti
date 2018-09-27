@@ -2,9 +2,9 @@ import lodash from 'lodash';
 import Chitti from './chitti';
 
 const global_handler_interceptors = [];
-Chitti.add_handler_interceptor = function (grpcHandlerInterceptorObject) {
-    global_handler_interceptors.push(grpcHandlerInterceptorObject);
-};
+
+Chitti.add_handler_interceptor = HandlerInterceptorClass =>
+    global_handler_interceptors.push(new HandlerInterceptorClass());
 
 export default class GenericService {
     constructor(service, implementation) {
@@ -32,7 +32,7 @@ export default class GenericService {
             lodash.each(service.service, (attr, name) => {
                 impl[name] = Class.prototype[name] ? Class.prototype[name] : Class.prototype[attr.originalName];
             });
-            const grpc_service = new GenericService(service, impl);
+            const grpc_service = new this(service, impl);
             grpc_service.middlewares = [...service.Service.handler_interceptors];
             grpc_service.wrap();
             return grpc_service;

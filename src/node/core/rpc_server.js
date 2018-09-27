@@ -9,6 +9,7 @@ export default class RPCServer extends grpc.Server {
         const healthImpl = new GRPCHealthImplementation();
         this.addService(GRPCHealth.service, healthImpl);
     }
+
     addService(serviceInst, implementation) {
         if (serviceInst.constructor === GenericService) {
             super.addService(serviceInst.service, serviceInst.wrappedImplementation);

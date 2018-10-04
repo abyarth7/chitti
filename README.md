@@ -25,7 +25,7 @@ For Ruby:
 For Node:
 Go through [chiiti ruby documentation](https://github.com/NestAway/chitti/blob/master/src/ruby/README.md).
 For Ruby:
-Go through [chitti node documentation](https://github.com/NestAway/chitti/blob/master/src/node/README.md).
+Go through [chitti node documentation](https://github.com/NestAway/chitti/blob/master/src/node-src/README.md).
 
 # License
 The package or gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).

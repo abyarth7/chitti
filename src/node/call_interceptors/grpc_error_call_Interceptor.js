@@ -1,5 +1,16 @@
-import grpc from 'grpc';
-import { GRPCErrorRegistry } from '../core/grpc_error';
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _grpc = require('grpc');
+
+var _grpc2 = _interopRequireDefault(_grpc);
+
+var _grpc_error = require('../core/grpc_error');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function GRPCErrorCallInterceptor(options, nextCall) {
     let savedMessage;
@@ -12,32 +23,29 @@ function GRPCErrorCallInterceptor(options, nextCall) {
                     savedMessageNext = nextMessage;
                 },
                 onReceiveStatus(status, nextStatus) {
-                    if (status.code !== grpc.status.OK) {
+                    if (status.code !== _grpc2.default.status.OK) {
                         let errobj;
                         if (status.metadata.get('grpc_custom_error')[0]) {
                             errobj = JSON.parse(status.metadata.get('grpc_custom_error')[0]);
                             status.metadata.remove('grpc_custom_error');
                         }
-                        if (errobj && GRPCErrorRegistry[errobj.type]) {
-                            const newError = new GRPCErrorRegistry[errobj.type]
-                                .ctr(GRPCErrorRegistry[errobj.type].ctr.decode(Buffer.from(errobj.payload, 'base64')));
+                        if (errobj && _grpc_error.GRPCErrorRegistry[errobj.type]) {
+                            const newError = new _grpc_error.GRPCErrorRegistry[errobj.type].ctr(_grpc_error.GRPCErrorRegistry[errobj.type].ctr.decode(Buffer.from(errobj.payload, 'base64')));
                             newError.code = status.code;
                             newError.details = status.details;
                             newError.metadata = status.metadata;
                             nextStatus(newError);
-                        }
-                        else nextStatus(status);
-                    }
-                    else {
+                        } else nextStatus(status);
+                    } else {
                         savedMessageNext(savedMessage);
                         nextStatus(status);
                     }
-                },
+                }
             };
             next(metadata, new_listener);
-        },
+        }
     };
-    return new grpc.InterceptingCall(nextCall(options), requester);
+    return new _grpc2.default.InterceptingCall(nextCall(options), requester);
 }
 
-export default GRPCErrorCallInterceptor;
+exports.default = GRPCErrorCallInterceptor;

@@ -1,29 +1,29 @@
 {
   "name": "chitti",
   "version": "1.0.0",
-  "main": "src/node-dist/index.js",
+  "main": "src/node/index.js",
   "repository": "git@github.com:NestAway/chitti.git",
   "author": "NestAway Core-Infra Team",
   "license": "MIT",
   "scripts": {
-    "build": "BABEL_ENV=node6 babel src/node --out-dir src/node-dist"
+    "build": "BABEL_ENV=node6 babel src/node-src --out-dir src/node"
   },
   "engines": {
     "node": ">=4"
   },
   "directories": {
-    "lib": "src/node-dist"
+    "lib": "src/node"
   },
   "files": [
     "README.md",
     "LICENSE.txt",
-    "src/node-dist",
-    "src/node/bin",
+    "src/node",
+    "src/node-src/bin",
     "package.json",
     "package-lock.json"
   ],
   "bin": {
-    "health": "src/node/bin/health"
+    "health": "src/node-src/bin/health"
   },
   "dependencies": {
     "grpc": "^1.12.3",

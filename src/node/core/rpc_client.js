@@ -1,10 +1,26 @@
-import lodash from 'lodash';
-import grpc from 'grpc';
-import Chitti from './chitti';
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _grpc = require('grpc');
+
+var _grpc2 = _interopRequireDefault(_grpc);
+
+var _chitti = require('./chitti');
+
+var _chitti2 = _interopRequireDefault(_chitti);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const global_call_interceptors = [];
 
-Chitti.add_call_interceptor = CallInterceptor => {
+_chitti2.default.add_call_interceptor = CallInterceptor => {
     global_call_interceptors.push(CallInterceptor);
 };
 
@@ -16,17 +32,10 @@ const RPCClient = grpcService => {
             [serviceName]: class extends grpcService {
                 constructor(...args) {
                     const num_args = args.length;
-                    const interceptors = lodash.concat(
-                        [...global_call_interceptors],
-                        [...ServiceClient.call_interceptors],
-                    );
-                    if (num_args === 2) args.push({ interceptors: [...interceptors] });
-                    else if (num_args === 3 && args[2] instanceof Object) {
+                    const interceptors = _lodash2.default.concat([...global_call_interceptors], [...ServiceClient.call_interceptors]);
+                    if (num_args === 2) args.push({ interceptors: [...interceptors] });else if (num_args === 3 && args[2] instanceof Object) {
                         if (!Array.isArray(args[2].interceptors)) args[2].interceptors = [];
-                        args[2].interceptors = lodash.concat(
-                            args[2].interceptors,
-                            lodash.reverse(ServiceClient.call_interceptors),
-                        );
+                        args[2].interceptors = _lodash2.default.concat(args[2].interceptors, _lodash2.default.reverse(ServiceClient.call_interceptors));
                     }
                     super(...args);
                 }
@@ -57,7 +66,7 @@ const RPCClient = grpcService => {
                 static get port() {
                     return this.envVars.port;
                 }
-            },
+            }
         }[serviceName];
         ServiceClient.Service = { [serviceName]: class {} }[serviceName];
         ServiceClient.Service.ServiceClient = ServiceClient;
@@ -74,21 +83,20 @@ const RPCClient = grpcService => {
                     if (!(this.port && this.host)) {
                         throw new Error('Set host:port params');
                     }
-                    this.stub = new this(`${this.host}:${this.port}`, grpc.credentials.createInsecure());
+                    this.stub = new this(`${this.host}:${this.port}`, _grpc2.default.credentials.createInsecure());
                     isConfigChanged = false;
                 }
                 return this.stub[methodName](...args);
             };
         };
-        lodash.each(grpcService.service, (attr, name) => {
+        _lodash2.default.each(grpcService.service, (attr, name) => {
             ServiceClient[`${name}`] = ServiceClient._getStaticWrapper(`${name}`);
             ServiceClient.prototype[name] = function (...args) {
                 return new Promise((resolve, reject) => {
                     grpcService.prototype[name].bind(this)(...args, (error, response) => {
                         if (error) {
                             reject(error);
-                        }
-                        else {
+                        } else {
                             resolve(response);
                         }
                     });
@@ -106,4 +114,4 @@ function _getServiceName(grpcService) {
     return fullName.substring(fullName.lastIndexOf('.') + 1);
 }
 
-export default RPCClient;
+exports.default = RPCClient;

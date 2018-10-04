@@ -1,25 +1,43 @@
-import grpc from 'grpc';
-import GRPCHealth from 'grpc-health-check/health';
-import GRPCHealthImplementation from '../grpc-health/health_implementation';
-import GenericService from './generic_service';
+'use strict';
 
-export default class RPCServer extends grpc.Server {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _grpc = require('grpc');
+
+var _grpc2 = _interopRequireDefault(_grpc);
+
+var _health = require('grpc-health-check/health');
+
+var _health2 = _interopRequireDefault(_health);
+
+var _health_implementation = require('../grpc-health/health_implementation');
+
+var _health_implementation2 = _interopRequireDefault(_health_implementation);
+
+var _generic_service = require('./generic_service');
+
+var _generic_service2 = _interopRequireDefault(_generic_service);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class RPCServer extends _grpc2.default.Server {
     constructor() {
         super();
-        const healthImpl = new GRPCHealthImplementation();
-        this.addService(GRPCHealth.service, healthImpl);
+        const healthImpl = new _health_implementation2.default();
+        this.addService(_health2.default.service, healthImpl);
     }
 
     addService(serviceInst, implementation) {
-        if (serviceInst.constructor === GenericService) {
+        if (serviceInst.constructor === _generic_service2.default) {
             super.addService(serviceInst.service, serviceInst.wrappedImplementation);
-        }
-        else if (implementation === undefined && typeof serviceInst === 'function' && serviceInst.ServiceClient) {
-            const grpc_service = GenericService.handle(serviceInst.ServiceClient)(serviceInst);
+        } else if (implementation === undefined && typeof serviceInst === 'function' && serviceInst.ServiceClient) {
+            const grpc_service = _generic_service2.default.handle(serviceInst.ServiceClient)(serviceInst);
             this.addService(grpc_service);
-        }
-        else {
+        } else {
             super.addService(serviceInst, implementation);
         }
     }
 }
+exports.default = RPCServer;

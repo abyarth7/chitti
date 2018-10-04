@@ -1,14 +1,4 @@
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _grpc = require('grpc');
-
-var _grpc2 = _interopRequireDefault(_grpc);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+import grpc from 'grpc';
 
 const maxRetries = 3;
 function GRPCRetriesInterceptor(options, nextCall) {
@@ -34,36 +24,39 @@ function GRPCRetriesInterceptor(options, nextCall) {
                                 savedReceiveMessage = msgReceived;
                             },
                             onReceiveStatus(statusReceived) {
-                                if (statusReceived.code !== _grpc2.default.status.OK) {
+                                if (statusReceived.code !== grpc.status.OK) {
                                     if (retries <= maxRetries) {
                                         retry(message, meta);
-                                    } else {
+                                    }
+                                    else {
                                         savedMessageNext(savedReceiveMessage);
                                         nextStatus(statusReceived);
                                     }
-                                } else {
-                                    savedMessageNext(savedReceiveMessage);
-                                    nextStatus({ code: _grpc2.default.status.OK });
                                 }
-                            }
+                                else {
+                                    savedMessageNext(savedReceiveMessage);
+                                    nextStatus({ code: grpc.status.OK });
+                                }
+                            },
                         });
                     }
-                    if (status.code !== _grpc2.default.status.OK) {
+                    if (status.code !== grpc.status.OK) {
                         retry(savedSendMessage, savedMetadata);
-                    } else {
+                    }
+                    else {
                         savedMessageNext(savedReceiveMessage);
                         nextStatus(status);
                     }
-                }
+                },
             };
             next(metadata, newListener);
         },
         sendMessage(message, next) {
             savedSendMessage = message;
             next(message);
-        }
+        },
     };
-    return new _grpc2.default.InterceptingCall(nextCall(options), requester);
+    return new grpc.InterceptingCall(nextCall(options), requester);
 }
 
-exports.default = GRPCRetriesInterceptor;
+export default GRPCRetriesInterceptor;

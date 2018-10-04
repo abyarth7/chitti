@@ -2,7 +2,8 @@
 
 require 'grpc'
 require 'statsd-instrument'
-require_relative '../../proto/health_services'
+require 'chitti/health/proto/health_services'
+
 class HealthCheck
   def self.start(host, port)
     stub = Grpc::Health::V1::Health::Stub.new("#{host}:#{port}", :this_channel_is_insecure, timeout: 1)
@@ -12,3 +13,5 @@ class HealthCheck
     puts resp.to_json
   end
 end
+
+HealthCheck.start(ENV['GRPC_HOST'] || '0.0.0.0', ENV['GRPC_PORT'] || '50052')

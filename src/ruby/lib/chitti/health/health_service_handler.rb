@@ -1,6 +1,7 @@
 require 'grpc'
 require 'statsd-instrument'
-require_relative '../../proto/health_services'
+require 'chitti/health/proto/health_services'
+
 module Health
   class HealthService < Grpc::Health::V1::Health::Service
     def check(_req, _unused_call)

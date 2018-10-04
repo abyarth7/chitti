@@ -9,21 +9,19 @@ gem 'chitti', :git => 'git@github.com:NestAway/chitti.git', :branch => 'master'
 
 # Usage
 
-## 1. Inherit this module in your RPC service class definition file => X_services_pb.rb
-
-Replace `GRPC::GenericService` with `Chitti::GenericService`
+## 1. Compile your proto file for your service.
 
 
+This will be proto compile output for an sample grpc service
 ```ruby
 
-require 'chitti'
 require 'testgrpc_pb'
 
 module Testgrpc
   module TestgrpcService
     class Service
 
-      include Chitti::GenericService   # including the custom module
+      include GRPC::GenericService
 
       self.marshal_class_method = :encode
       self.unmarshal_class_method = :decode
@@ -38,8 +36,18 @@ end
 
 ```
 
+## 2. include chitti in your service and do rpc_import for your service
 
-## 2. Implementing service handlers
+```ruby
+
+require 'chitti'
+
+Chitti.RpcImport(Testgrpc::TestgrpcService)
+
+```
+
+
+## 3. Implementing service handlers
 
 Implementation of the rpc methods
 
@@ -49,7 +57,7 @@ class  TestgrpcService < Testgrpc::TestgrpcService::Service
   def hellogrpc(req, _unused_call)
       Log.log.info "Received call in hellogrpc #{req.to_h}"
       response = Testgrpc::HelloResponse.new
-      response.res_message = "Hello from Grpc Server ! "
+      response.res_message = "Hello from rpc Server ! "
       response
   end
 end
@@ -62,7 +70,7 @@ end
 require 'chitti'
 
 def main
-    @server = Chitti::RpcServer.new(host_port: '0.0.0.0:500052', pool_size: 10, max_waiting_requests: 10, interceptors: [])
+    @server = Chitti::RpcServer.new(host_port: '0.0.0.0:50052', pool_size: 10, max_waiting_requests: 10, interceptors: [])
     @server.handle(TestgrpcService) # add whatever service implementations you want to include in server
     @server.start # start the server
 end
@@ -74,7 +82,7 @@ end
 ```ruby
 # global config
 Testgrpc::TestgrpcService.host = "0.0.0.0"
-Testgrpc::TestgrpcService.port = "8008"
+Testgrpc::TestgrpcService.port = "50052"
 
 # Call the rpc method
 Testgrpc::TestgrpcService.hellogrpc(req)
@@ -86,7 +94,24 @@ Testgrpc::TestgrpcService.hellogrpc(req)
 
 We can add client and server interceptors while creating the server and client stub by passing interceptors array as arguments.
 
-By default we added two server interceptors(statsD, custom_error_interceptor) and one client interceptor(custom_error_client_interceptor)
+By using chitti we provide global and service level interceptors for client and server
+
+By default we added one handler interceptors(custom_error_handler_interceptor) and one call interceptor(custom_error_call_interceptor)
+
+```ruby
+
+#client interceptors:
+
+Chitti.add_call_interceptor()   #global
+MyService.add_call_interceptor()  #service_specific
+
+
+#server interceptors:
+
+Chitti.add_handler_interceptor()  #global
+MyService.add_handler_interceptor() #service_specific
+
+```
 
 
 Example Implementation of server Interceptor
@@ -99,7 +124,9 @@ class ServerRequestLogInterceptor < GRPC::ServerInterceptor
   end
 end
 
-Chitti::RpcServer.add_middleware(ServerRequestLogInterceptor.new)
+Chitti.add_handler_interceptor(ServerRequestLogInterceptor.new) # adding globally
+
+Testgrpc::TestgrpcService.add_handler_interceptor(ServerRequestLogInterceptor.new) # adding service specific
 
 ```
 
@@ -116,9 +143,13 @@ class TaskFutureClientInterceptor < GRPC::ClientInterceptor
   end
 end
 
-Testgrpc::TestgrpcService.interceptors = [TaskFutureClientInterceptor.new]
+Chitti.add_call_interceptor(TaskFutureClientInterceptor.new) # adding globally
+
+Testgrpc::TestgrpcService.add_call_interceptor(TaskFutureClientInterceptor.new) # adding service specific
 
 ```
+
+Order of execution of interceptors will be  Global followed by service specific
 
 
 ## 6. Custom Error Implementation
@@ -148,7 +179,7 @@ Throwing an Error in your handlers:
 
 ```ruby
 def hellogrpc(req, _unused_call)
-    raise Testgrpc::CustomError.new({ custom: "custom_error_raised" })
+    raise Testgrpc::Errors::CustomError.new({ custom: "custom_error_raised" })
 end
 ```
 
@@ -158,7 +189,7 @@ Catching the error at client end:
 
 begin
     Testgrpc::TestgrpcService.hellogrpc(req)
-rescue Testgrpc::CustomError
+rescue Testgrpc::Errors::CustomError
     # Handle the error
 end
 ```

@@ -1,7 +1,0 @@
-syntax = "proto3";
-package nest.commons;
-
-message GenericResponse {
-    bool success = 1 ;
-    string info = 2;
-}

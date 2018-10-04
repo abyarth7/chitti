@@ -12,9 +12,9 @@ var _health = require('grpc-health-check/health');
 
 var _health2 = _interopRequireDefault(_health);
 
-var _health_implementation = require('../grpc-health/health_implementation');
+var _health_service_handler = require('../health/health_service_handler');
 
-var _health_implementation2 = _interopRequireDefault(_health_implementation);
+var _health_service_handler2 = _interopRequireDefault(_health_service_handler);
 
 var _generic_service = require('./generic_service');
 
@@ -25,7 +25,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class RPCServer extends _grpc2.default.Server {
     constructor() {
         super();
-        const healthImpl = new _health_implementation2.default();
+        const healthImpl = new _health_service_handler2.default();
         this.addService(_health2.default.service, healthImpl);
     }
 

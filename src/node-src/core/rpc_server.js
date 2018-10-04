@@ -1,6 +1,6 @@
 import grpc from 'grpc';
 import GRPCHealth from 'grpc-health-check/health';
-import GRPCHealthImplementation from '../grpc-health/health_implementation';
+import GRPCHealthImplementation from '../health/health_service_handler';
 import GenericService from './generic_service';
 
 export default class RPCServer extends grpc.Server {

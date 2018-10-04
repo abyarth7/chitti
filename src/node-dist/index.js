@@ -3,32 +3,41 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.GRPCError = exports.GRPCClient = exports.GRPCServer = exports.GRPCService = exports.GRPCMiddleware = undefined;
+exports.Chitti = exports.Error = exports.RPCImport = exports.RPCServer = exports.HandlerInterceptor = undefined;
 
-var _grpc_middleware = require('./grpc-core/grpc_middleware');
+var _chitti = require('./core/chitti');
 
-var _grpc_middleware2 = _interopRequireDefault(_grpc_middleware);
+var _chitti2 = _interopRequireDefault(_chitti);
 
-var _grpc_service = require('./grpc-core/grpc_service');
+var _handler_interceptor = require('./core/handler_interceptor');
 
-var _grpc_service2 = _interopRequireDefault(_grpc_service);
+var _handler_interceptor2 = _interopRequireDefault(_handler_interceptor);
 
-var _grpc_server = require('./grpc-core/grpc_server');
+var _rpc_server = require('./core/rpc_server');
 
-var _grpc_server2 = _interopRequireDefault(_grpc_server);
+var _rpc_server2 = _interopRequireDefault(_rpc_server);
 
-var _grpc_client = require('./grpc-core/grpc_client');
+var _rpc_import = require('./core/rpc_import');
 
-var _grpc_client2 = _interopRequireDefault(_grpc_client);
+var _rpc_import2 = _interopRequireDefault(_rpc_import);
 
-var _grpc_custom_error = require('./grpc-core/grpc_custom_error');
+var _grpc_error = require('./core/grpc_error');
+
+var _grpc_error_handler_interceptor = require('./handler_interceptors/grpc_error_handler_interceptor');
+
+var _grpc_error_handler_interceptor2 = _interopRequireDefault(_grpc_error_handler_interceptor);
+
+var _grpc_error_call_Interceptor = require('./call_interceptors/grpc_error_call_Interceptor');
+
+var _grpc_error_call_Interceptor2 = _interopRequireDefault(_grpc_error_call_Interceptor);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-require('./server_middlewares/error_middleware');
+_chitti2.default.add_handler_interceptor(_grpc_error_handler_interceptor2.default);
+_chitti2.default.add_call_interceptor(_grpc_error_call_Interceptor2.default);
 
-exports.GRPCMiddleware = _grpc_middleware2.default;
-exports.GRPCService = _grpc_service2.default;
-exports.GRPCServer = _grpc_server2.default;
-exports.GRPCClient = _grpc_client2.default;
-exports.GRPCError = _grpc_custom_error.GRPCError;
+exports.HandlerInterceptor = _handler_interceptor2.default;
+exports.RPCServer = _rpc_server2.default;
+exports.RPCImport = _rpc_import2.default;
+exports.Error = _grpc_error.Error;
+exports.Chitti = _chitti2.default;

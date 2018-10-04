@@ -1,11 +1,10 @@
 import grpc from 'grpc';
-import GRPCMiddleware from '../grpc-core/grpc_middleware';
-import GRPCService from '../grpc-core/grpc_service';
-import { GRPCErrorRegistry } from '../grpc-core/grpc_custom_error';
+import HandlerInterceptor from '../core/handler_interceptor';
+import { GRPCErrorRegistry } from '../core/grpc_error';
 
 const logger = require('tracer').colorConsole();
 
-class ErrorMiddleware extends GRPCMiddleware {
+class GRPCErrorHandlerInterceptor extends HandlerInterceptor {
     async call(request, next) {
         try {
             const response = await next(request);
@@ -43,4 +42,4 @@ class ErrorMiddleware extends GRPCMiddleware {
     }
 }
 
-GRPCService.addMiddleware(new ErrorMiddleware());
+export default GRPCErrorHandlerInterceptor;

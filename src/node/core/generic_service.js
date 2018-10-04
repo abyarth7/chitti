@@ -1,6 +1,12 @@
 import lodash from 'lodash';
+import Chitti from './chitti';
 
-export default class GRPCService {
+const global_handler_interceptors = [];
+
+Chitti.add_handler_interceptor = HandlerInterceptorClass =>
+    global_handler_interceptors.push(new HandlerInterceptorClass());
+
+export default class GenericService {
     constructor(service, implementation) {
         if (service.constructor === this.constructor) return service;
         this.service = service.service;
@@ -26,7 +32,10 @@ export default class GRPCService {
             lodash.each(service.service, (attr, name) => {
                 impl[name] = Class.prototype[name] ? Class.prototype[name] : Class.prototype[attr.originalName];
             });
-            return new GRPCService(service, impl);
+            const grpc_service = new this(service, impl);
+            grpc_service.middlewares = [...service.Service.handler_interceptors];
+            grpc_service.wrap();
+            return grpc_service;
         };
     }
 
@@ -37,7 +46,10 @@ export default class GRPCService {
 
     wrap() {
         lodash.each(this.implementation, (fn, name) => {
-            const middlewares = lodash.concat(this.constructor.globalMiddlewares, [...this.middlewares].reverse());
+            const middlewares = lodash.concat(
+                [...global_handler_interceptors],
+                [...this.middlewares].reverse(),
+            );
             const totalMiddleWares = middlewares.length;
             this.wrappedImplementation[name] = async (request, callback) => {
                 let index = 0;

@@ -17,11 +17,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const global_handler_interceptors = [];
-_chitti2.default.add_handler_interceptor = function (grpcHandlerInterceptorObject) {
-    global_handler_interceptors.push(grpcHandlerInterceptorObject);
-};
 
-class GRPCService {
+_chitti2.default.add_handler_interceptor = HandlerInterceptorClass => global_handler_interceptors.push(new HandlerInterceptorClass());
+
+class GenericService {
     constructor(service, implementation) {
         if (service.constructor === this.constructor) return service;
         this.service = service.service;
@@ -47,7 +46,7 @@ class GRPCService {
             _lodash2.default.each(service.service, (attr, name) => {
                 impl[name] = Class.prototype[name] ? Class.prototype[name] : Class.prototype[attr.originalName];
             });
-            const grpc_service = new GRPCService(service, impl);
+            const grpc_service = new this(service, impl);
             grpc_service.middlewares = [...service.Service.handler_interceptors];
             grpc_service.wrap();
             return grpc_service;
@@ -111,4 +110,4 @@ class GRPCService {
         return samplePath.substring(samplePath.indexOf('/') + 1, samplePath.lastIndexOf('/'));
     }
 }
-exports.default = GRPCService;
+exports.default = GenericService;

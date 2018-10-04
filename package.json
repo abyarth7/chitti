@@ -1,12 +1,12 @@
 {
   "name": "chitti",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "src/node-dist/index.js",
   "repository": "git@github.com:NestAway/chitti.git",
   "author": "NestAway Core-Infra Team",
   "license": "MIT",
   "scripts": {
-    "build": "BABEL_ENV=node4 babel src/node --out-dir src/node-dist"
+    "build": "BABEL_ENV=node6 babel src/node --out-dir src/node-dist"
   },
   "engines": {
     "node": ">=4"
@@ -30,7 +30,8 @@
     "grpc-health-check": "^1.6.6",
     "lodash": "^4.17.5",
     "statsd-client": "^0.4.2",
-    "tracer": "^0.8.12"
+    "tracer": "^0.8.12",
+    "protobufjs": "^6.8.6"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

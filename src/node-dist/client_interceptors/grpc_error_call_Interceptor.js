@@ -25,17 +25,19 @@ _common2.default.createStatusError = function (status) {
     return defaultCreateStatus(status);
 };
 
-function GRPCErrorClientInterceptor(options, nextCall) {
+function GRPCErrorCallInterceptor(options, nextCall) {
     let savedMessage;
     let savedMessageNext;
     const requester = {
         start(metadata, listener, next) {
             const new_listener = {
                 onReceiveMessage(message, nextMessage) {
+                    console.log('2 enters global GRPCErrorCallInterceptor');
                     savedMessage = message;
                     savedMessageNext = nextMessage;
                 },
                 onReceiveStatus(status, nextStatus) {
+                    console.log('2 exits global GRPCErrorCallInterceptor');
                     if (status.code !== _grpc2.default.status.OK) {
                         let errobj;
                         if (status.metadata.get('grpc_custom_error')[0]) {
@@ -61,4 +63,4 @@ function GRPCErrorClientInterceptor(options, nextCall) {
     return new _grpc2.default.InterceptingCall(nextCall(options), requester);
 }
 
-exports.default = GRPCErrorClientInterceptor;
+exports.default = GRPCErrorCallInterceptor;

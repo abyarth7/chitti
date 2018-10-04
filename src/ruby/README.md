@@ -1,4 +1,6 @@
+## Installation
 
+`gem 'chitti', :git => 'git@github.com:NestAway/chitti.git', :branch => 'master'`
 
 # Usage
 
@@ -185,7 +187,4 @@ begin
 rescue Testgrpc::Errors::CustomError
     # Handle the error
 end
-```
-
-
 ```

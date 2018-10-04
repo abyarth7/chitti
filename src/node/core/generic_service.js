@@ -1,12 +1,26 @@
-import lodash from 'lodash';
-import Chitti from './chitti';
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _chitti = require('./chitti');
+
+var _chitti2 = _interopRequireDefault(_chitti);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const global_handler_interceptors = [];
 
-Chitti.add_handler_interceptor = HandlerInterceptorClass =>
-    global_handler_interceptors.push(new HandlerInterceptorClass());
+_chitti2.default.add_handler_interceptor = HandlerInterceptorClass => global_handler_interceptors.push(new HandlerInterceptorClass());
 
-export default class GenericService {
+class GenericService {
     constructor(service, implementation) {
         if (service.constructor === this.constructor) return service;
         this.service = service.service;
@@ -29,7 +43,7 @@ export default class GenericService {
     static handle(service) {
         return Class => {
             const impl = {};
-            lodash.each(service.service, (attr, name) => {
+            _lodash2.default.each(service.service, (attr, name) => {
                 impl[name] = Class.prototype[name] ? Class.prototype[name] : Class.prototype[attr.originalName];
             });
             const grpc_service = new this(service, impl);
@@ -45,41 +59,49 @@ export default class GenericService {
     }
 
     wrap() {
-        lodash.each(this.implementation, (fn, name) => {
-            const middlewares = lodash.concat(
-                [...global_handler_interceptors],
-                [...this.middlewares].reverse(),
-            );
-            const totalMiddleWares = middlewares.length;
-            this.wrappedImplementation[name] = async (request, callback) => {
-                let index = 0;
-                let response;
-                const next = async req => {
-                    try {
-                        if (totalMiddleWares <= index) {
-                            response = await fn(req);
-                        }
-                        else {
-                            response = await middlewares[index++].call(req, next, {
-                                service : this.name,
-                                method  : name,
-                            });
-                        }
-                        return response;
-                    }
-                    catch (err) {
-                        throw err;
-                    }
-                };
+        var _this = this;
 
-                try {
-                    response = await next(request);
-                    callback(null, response);
-                }
-                catch (err) {
-                    callback(err);
-                }
-            };
+        _lodash2.default.each(this.implementation, (fn, name) => {
+            const middlewares = _lodash2.default.concat([...global_handler_interceptors], [...this.middlewares].reverse());
+            const totalMiddleWares = middlewares.length;
+            this.wrappedImplementation[name] = (() => {
+                var _ref = _asyncToGenerator(function* (request, callback) {
+                    let index = 0;
+                    let response;
+                    const next = (() => {
+                        var _ref2 = _asyncToGenerator(function* (req) {
+                            try {
+                                if (totalMiddleWares <= index) {
+                                    response = yield fn(req);
+                                } else {
+                                    response = yield middlewares[index++].call(req, next, {
+                                        service: _this.name,
+                                        method: name
+                                    });
+                                }
+                                return response;
+                            } catch (err) {
+                                throw err;
+                            }
+                        });
+
+                        return function next(_x3) {
+                            return _ref2.apply(this, arguments);
+                        };
+                    })();
+
+                    try {
+                        response = yield next(request);
+                        callback(null, response);
+                    } catch (err) {
+                        callback(err);
+                    }
+                });
+
+                return function (_x, _x2) {
+                    return _ref.apply(this, arguments);
+                };
+            })();
         });
     }
 
@@ -88,3 +110,4 @@ export default class GenericService {
         return samplePath.substring(samplePath.indexOf('/') + 1, samplePath.lastIndexOf('/'));
     }
 }
+exports.default = GenericService;

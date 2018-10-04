@@ -1,10 +1,3 @@
-Chitti wraps grpc to provide a simpler, generic and extensible way to implement remote proceedure calls.
-
-
-# Installation
-
-gem 'chitti', :git => 'git@github.com:NestAway/chitti.git', :branch => 'master'
-
 
 
 # Usage

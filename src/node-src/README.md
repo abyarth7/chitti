@@ -1,16 +1,9 @@
-Chitti wraps grpc to provide a simpler, generic and extensible way to implement remote procedure calls.
-
-
-# Installation
-Include  [chitti](https://github.com/NestAway/chitti) in your package.json as dependency and run `npm install` to install package.
-
-
 # Usage
 
 ## 1. Compile your proto file for your service.
 
-// demo.proto
-```protobuf
+### demo.proto
+```proto
 package testgrpc;
 service TestgrpcService{
     rpc hellogrpc (HelloRequest) returns (HelloResponse) {}
@@ -30,8 +23,8 @@ message CustomError {
 }
 ```
 This will be proto compile output for an sample grpc service
-// demo.json
-```js
+### demo.json
+```json
 {
   "nested": {
     "testgrpc": {
@@ -96,10 +89,10 @@ This will be proto compile output for an sample grpc service
 
 
 ## 2. Include chitti in your service and 
-`import { RPCMiddleware, RPCServer, RPCImport, Error, Chitti } from 'chitti';` 
+`import { HandlerInterceptor, RPCServer, RPCImport, Error, Chitti } from 'chitti';` 
 
 
-## 4. Do rpc_import for your service    
+## 3. Do rpc_import for your service    
 
 It promisifies all protobuf messages.
 
@@ -107,11 +100,12 @@ It promisifies all protobuf messages.
 import { RPCImport } from 'chitti';
 const { TestgrpcService, HelloRequest, HelloResponse, CError, CustomError } = RPCImport(require("./demo.json")).testgrpc;
 ``` 
-Note: For both service and client same instance of RPCImport(require("./demo.json") need to be used.
+> Note: For both service and client same instance of RPCImport(require("./demo.json") need to be used.
 
 
-## 5. Implementing service handlers
-Implementation of the rpc methods
+## 4. Implementing service handlers
+
+### Implementation of the rpc methods
 
 ```js
 class MyService extends TestgrpcService.Service {
@@ -122,7 +116,7 @@ class MyService extends TestgrpcService.Service {
 ```
 
 
-## 6. Starting the server
+## 5. Starting the server
 ```js
 import grpc from 'grpc';
 import { RPCServer } from 'chitti';
@@ -136,7 +130,7 @@ grpc_server.bind('0.0.0.0:8080', grpc.ServerCredentials.createInsecure());
 grpc_server.start();
 ```
 
-## 7. Client creating stub and calling rpc methods
+## 6. Client creating stub and calling rpc methods
 
 ```js
 // Get 'TestgrpcService' from RPCImport
@@ -152,11 +146,11 @@ TestgrpcService.host = '0.0.0.0:8080';
 ```
 
 
-## 8. Adding Interceptors to client and server
+## 7. Adding Interceptors to client and server
 
 We can add client and server interceptors while creating the server and client stub by passing interceptors array as arguments.
 
-By using chitti we provide global and service level interceptors for client and server
+Using chitti we provide global and service level interceptors for client and server
 
 By default we added one handler interceptors(custom_error_handler_interceptor) and one call interceptor(custom_error_call_interceptor)
 
@@ -170,10 +164,10 @@ Chitti.add_call_interceptor(TestCallInterceptor); //global
 TestgrpcService.add_call_interceptor(TestCallInterceptor); // service specific
 ```
 
-Example Implementation of server Interceptor
+###Example Implementation of server Interceptor
 ```js
-import { RPCMiddleware } from 'chitti';
-class TestHandleInterceptor extends RPCMiddleware {
+import { HandlerInterceptor } from 'chitti';
+class TestHandleInterceptor extends HandlerInterceptor {
     async call(request, next) {
         try {
             const response = await next(request);
@@ -190,7 +184,7 @@ Chitti.add_handler_interceptor(new TestHandleInterceptor());  // adding globally
 MyService.add_handler_interceptor(new TestHandleInterceptor()); // adding to specific service
 ```
 
-Example Implementation of client Interceptor
+### Example Implementation of client Interceptor
 ```js
 import grpc from 'grpc';
 function TestCallInterceptor(options, nextCall) {
@@ -200,12 +194,12 @@ function TestCallInterceptor(options, nextCall) {
         start(metadata, listener, next) {
             const new_listener = {
                 onReceiveMessage(message, nextMessage) {
-                  //impliment your own custom logic 
+                  // after receiving response logic
                     savedMessage = message;
                     savedMessageNext = nextMessage;
                 },
                 onReceiveStatus(status, nextStatus) {
-                  //impliment your own custom logic 
+                  // after receiving status logic
                     savedMessageNext(savedMessage);
                     nextStatus(status);
                 },
@@ -221,10 +215,10 @@ TestgrpcService.add_call_interceptor(TestCallInterceptor); // adding to specific
 ```
 
 
-## 9. Custom Error Implementation
-RPCs provide a way to invoke remote methods as if they are locally available. However, this paradigm usally breaks down when it comes to handling errors. Chitti provides a local-like error handling model where service handlers throw custom exceptions and clients can handle those exceptions.
+## 8. Custom Error Implementation
+> RPCs provide a way to invoke remote methods as if they are locally available. However, this paradigm usally breaks down when it comes to handling errors. Chitti provides a local-like error handling model where service handlers throw custom exceptions and clients can handle those exceptions.
 
-Consider a service want to throw CustomError, CError as errors
+### Consider a service want to throw CustomError, CError as errors
 ```protobuf
 package testgrpc;
 
@@ -238,14 +232,14 @@ message CustomError {
 }
 ```
 
-you have to classify the above proto message as an error:
+### You have to classify the above proto message as an error:
 ```js
 import { Error } from 'chitti';
-
-//Get  CError, CustomError from RPCImport
-//Along with status code and default it takes 500
-//Can be error enabled all protobuf messages with same status code at once 
-
+```
+> Get  CError, CustomError from RPCImport
+> Along with status code and default it takes 500
+> Can be error enabled all protobuf messages with same status code at once.
+```js
 Error.enable([CError,CustomError]);// default code = 500
 // or
 Error.enable([CError,CustomError],{code:502});
@@ -254,7 +248,7 @@ Error.enable([CustomError],{code:502});
 Error.enable([CError],{code:504});
 ```
 
-Throwing an Error from handlers:
+### Throwing an Error from handlers:
 
 Note: Before throw a protobuf messages ensure it is Error enabled
 ```js
@@ -267,7 +261,7 @@ class MyService extends TestgrpcService.Service {
 }
 ```
 
-Catching the error at client end:
+### Catching the error at client end:
 
 ```js
 (async () => {
@@ -278,11 +272,11 @@ Catching the error at client end:
     catch (error) {
         console.log(error);
         // =>
-        // CustomError {
-        // reason: 'thank you for using error',
-        // code: 502,
-        // details: 'nodetestgrpc.CustomError',
-        // metadata: Metadata { _internal_repr: {} } }
+        //  CustomError {
+        //  reason: 'thank you for using error',
+        //  code: 502,
+        //  details: 'nodetestgrpc.CustomError',
+        //  metadata: Metadata { _internal_repr: {} } }
         console.log(error.reason); // => 'thank you for using error'
         console.log(error.code); // => 502
         console.log(error.details); // => 'testgrpc.CustomError        

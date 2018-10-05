@@ -1,4 +1,4 @@
-## Installation
+# Installation
 
 Include [chitti](https://github.com/NestAway/chitti) in your package.json as dependency and run `npm install`.
 
@@ -28,7 +28,7 @@ import { RPCImport } from 'chitti';
 const { TestgrpcService } = RPCImport(require("./test.json")).testgrpc;
 ``` 
 
-## 4. Implementing service handlers and adding the service to server
+## 2. Implementing service handlers and adding the service to server
 
 ### Implementation of the rpc methods
 
@@ -50,7 +50,7 @@ grpc_server.start();
 ```
 `TestgrpcService` is a grpc service object return by `RPCImport` 
 
-## 6. Client creating stub and calling the rpc method
+## 3. Client creating stub and calling the rpc method
 Clients when calling the rpc method need not give any callback function, instead can await on the promise returned by the method
 
 ### creating a stub:
@@ -67,14 +67,14 @@ TestgrpcService.host = '0.0.0.0:8080';
 A new stub is created everytime when the host and port values are changed.
 
 
-## 7. Adding Interceptors to client and server
+## 4. Adding Interceptors to client and server
 We can add client and server interceptors while creating the server and client stub by passing  the interceptor's class as an array argument. <br> Both server and client interceptors can be added globally (added to all services/clients in the server) and also specific to a service/client.
 Using chitti we provide global and service level interceptors for client and server
 <br>
 * Server Interceptors: 
   * `custom_error_handler_interceptor`: This interceptor is by default added to all services.
 * Client Interceptors:
-  * `custom_error_call_interceptor`: This interceptor is by default added to all clients. Refer [error handling](https://github.com/NestAway/chitti/blob/master/src/node-src/README.md#8-custom-error-implementation)
+  * `custom_error_call_interceptor`: This interceptor is by default added to all clients. Refer [error handling](https://github.com/NestAway/chitti/blob/master/src/node-src/README.md#5-custom-error-implementation)
 
 ```js
 //server interceptors
@@ -138,7 +138,7 @@ Chitti.add_call_interceptor(TestCallInterceptor); // adding globally
 TestgrpcService.add_call_interceptor(TestCallInterceptor); // adding to specific service 
 ```
 
-## 8. Custom Error Implementation
+## 5. Custom Error Implementation
 > RPCs provide a way to invoke remote methods as if they are locally available. However, this paradigm usally breaks down when it comes to handling errors. Chitti provides a local-like error handling model where service handlers throw custom exceptions and clients can handle those exceptions.
 
 ### Consider a service which throws CustomError1, CustomError2 errors
@@ -199,7 +199,7 @@ class MyService extends TestgrpcService.Service {
         //  metadata: Metadata { _internal_repr: {} } }
         console.log(error.reason); // => 'error'
         console.log(error.code); // => 502
-        console.log(error.details); // => 'testgrpc.CustomError        
+        console.log(error.details); // => 'testgrpc.CustomError2        
     }
 })();
 ```

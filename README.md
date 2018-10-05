@@ -8,7 +8,7 @@
  *  Chitti provides a local-like error handling model where service handlers throw custom exceptions which clients can handle
  * Promisifing rpc calls and rpc method implementation in `NodeJs`: 
     * The handler implementation of a rpc method can diretctly return the protobuf message, instead of adding a callback function
-    * On the client side, while making a rpc to a grpc service, instead od adding a callback function, clients can `await` on the promise returned by the service
+    * On the client side, while making a rpc to a grpc service, instead of adding a callback function, clients can `await` on the promise returned by the service
 
 ## Usage
 For `Ruby` applications use [Chitti Ruby](https://github.com/NestAway/chitti/blob/master/src/ruby) and 

@@ -53,7 +53,7 @@ grpc_server.start();
 ## 3. Client creating stub and calling the rpc method
 Clients when calling the rpc method need not give any callback function, instead can await on the promise returned by the rpc method
 
-### creating a stub:
+### Creating a stub:
 ```js
 // Get 'TestgrpcService' from RPCImport
 TestgrpcService.host = '0.0.0.0';

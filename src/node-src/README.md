@@ -68,13 +68,16 @@ A new stub is created everytime when the host and port values are changed.
 
 
 ## 4. Adding Interceptors to client and server
-We can add client and server interceptors while creating the server and client stub by passing  the interceptor's class as an array argument. <br> Both server and client interceptors can be added globally (added to all services/clients in the server) and also specific to a service/client.
-Using chitti we provide global and service level interceptors for client and server
+We can add client and server interceptors while creating the server and client stub by passing  the interceptor's class. Both server and client interceptors can be added globally (added to all services/clients in the server) and also specific to a service/client. <br>
+[chitti](https://github.com/NestAway/chitti) provides an interface to add server and client interceptors. <br>
+`add_handler_interceptor`: to add server interceptors <br>
+`add_call_interceptor`: to add client interceptors <br>
 <br>
-* Server Interceptors: 
-  * `custom_error_handler_interceptor`: This interceptor is by default added to all services.
-* Client Interceptors:
-  * `custom_error_call_interceptor`: This interceptor is by default added to all clients. Refer [error handling](https://github.com/NestAway/chitti/tree/documentation/src/node-src#5-custom-error-implementation)
+### Default Interceptors
+* `custom_error_handler_interceptor` : added to all services 
+* `custom_error_call_interceptor`: added to all clients.
+<br>
+Refer [error handling](https://github.com/NestAway/chitti/tree/documentation/src/node-src#5-custom-error-implementation) for more details
 
 ```js
 //server interceptors

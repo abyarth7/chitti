@@ -74,7 +74,7 @@ Using chitti we provide global and service level interceptors for client and ser
 * Server Interceptors: 
   * `custom_error_handler_interceptor`: This interceptor is by default added to all services.
 * Client Interceptors:
-  * `custom_error_call_interceptor`: This interceptor is by default added to all clients. Refer [error handling](https://github.com/NestAway/chitti/blob/master/src/node-src/README.md#5-custom-error-implementation)
+  * `custom_error_call_interceptor`: This interceptor is by default added to all clients. Refer [error handling](https://github.com/NestAway/chitti/tree/documentation/src/node-src#5-custom-error-implementation)
 
 ```js
 //server interceptors

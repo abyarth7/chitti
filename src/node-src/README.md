@@ -51,7 +51,7 @@ grpc_server.start();
 `TestgrpcService` is a grpc service object return by `RPCImport` 
 
 ## 3. Client creating stub and calling the rpc method
-Clients when calling the rpc method need not give any callback function, instead can await on the promise returned by the method
+Clients when calling the rpc method need not give any callback function, instead can await on the promise returned by the rpc method
 
 ### creating a stub:
 ```js

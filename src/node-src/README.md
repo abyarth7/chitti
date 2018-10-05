@@ -1,6 +1,6 @@
 # Installation
 
-Include [chitti](https://github.com/NestAway/chitti) in your package.json as dependency and run `npm install`.
+Include [Chitti](https://github.com/NestAway/chitti) in your package.json as dependency and run `npm install`.
 
 # Usage
 
@@ -69,14 +69,13 @@ A new stub is created everytime when the host and port values are changed.
 
 ## 4. Adding Interceptors to client and server
 We can add client and server interceptors while creating the server and client stub by passing  the interceptor's class. Both server and client interceptors can be added globally (added to all services/clients in the server) and also specific to a service/client. <br>
-[chitti](https://github.com/NestAway/chitti) provides an interface to add server and client interceptors. <br>
+[Chitti](https://github.com/NestAway/chitti) provides an interface to add server and client interceptors. <br>
 `add_handler_interceptor`: to add server interceptors <br>
 `add_call_interceptor`: to add client interceptors <br>
-<br>
 ### Default Interceptors
 * `custom_error_handler_interceptor` : added to all services 
-* `custom_error_call_interceptor`: added to all clients.
-<br>
+* `custom_error_call_interceptor`: added to all clients
+
 Refer [error handling](https://github.com/NestAway/chitti/tree/documentation/src/node-src#5-custom-error-implementation) for more details
 
 ```js
@@ -158,7 +157,7 @@ message CustomError2 {
 }
 ```
 
-### You have to classify the above proto message as an error:
+### Classifying the protobuf message as Error
 The above proto messages have to be classified as errors. This is done through `Error.enable` which takes an array of protobuf messages from `RPCImport` as the first argument and `Object` as the second one. To throw a specific error code set `code` as a key and the error code as value to the `Object`. If no code is specified, it takes `500` as the default value.
 
 ```js
@@ -173,7 +172,7 @@ Error.enable([CustomError2],{code:504});
 ```
 
 ### Throwing an Error from handlers:
-Note: Before throw a protobuf messages ensure it is Error enabled
+Note: Before throwing a protobuf message instance(error object), ensure that it is Error enabled otherwise the client will not recieve its as an [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) object.
 ```js
 class MyService extends TestgrpcService.Service {
     async hellogrpc(req) {
@@ -184,7 +183,7 @@ class MyService extends TestgrpcService.Service {
 }
 ```
 
-### Catching the error at client end:
+### Catching the Error at client end:
 
 ```js
 (async () => {

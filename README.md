@@ -2,12 +2,13 @@
 `Chitti` is a wrapper on [gRPC](https://grpc.io) to provide a simpler, generic and extensible way to implement remote procedure calls. 
 <br>
 ## Features
- * `gRPC` allows to apply interceptors on both server and client side for `Ruby` and only on server side for `NodeJs`. `Chitti` allows to apply interceptors on server side too on `NodeJs`.
- * `Chitti` provides a easy interface to add interceptors for both client and server side in `Ruby` and `NodeJs`.
- * Promisifing the rpc calls and rpc methods implementations in `NodeJs`: While making a rpc call to a service, instead of adding callback method, clients can await on the promise returned by the service. Similarly, while implementing the handler for a rpc method, we can directly return the protobuf message instead of callback function.
-
-Note: 
-> For Node protobuf messages automatically promisified by chitti.
+ * `Chitti` provides an easy interface to add interceptors for both client and server in `Ruby` and `NodeJs`
+ * Using `Chitti`, interceptors can be created and applied on server side in `NodeJs` <br>
+ >`gRPC` allows to apply interceptors on both server and client side for `Ruby` and it  allows to apply interceptors    only on client side for `NodeJs` But not on server side.
+ *  Chitti provides a local-like error handling model where service handlers throw custom exceptions which clients can handle
+ * Promisifing rpc calls and rpc method implementation in `NodeJs`: 
+    * The handler implementation of a rpc method can diretctly return the protobuf message, instead of adding a callback function
+    * On the client side, while making a rpc to a grpc service, instead od adding a callback function, clients can `await` on the promise returned by the service
 
 ## Usage
 For `Ruby` applications use [Chitti Ruby](https://github.com/NestAway/chitti/blob/master/src/ruby) and 

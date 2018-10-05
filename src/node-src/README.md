@@ -17,13 +17,6 @@ message HelloRequest {
 message HelloResponse {
     string res_message = 1;
 }
-message CError {
-	string content = 1;
-	string id = 2;
-}
-message CustomError {
-    string reason = 1;
-}
 ```
 >  NOTE: In this example we are using protobufjs to load the JSON file `test.json` equivalent to the above .proto file
 
@@ -32,7 +25,7 @@ Instead of directly including the json file, the json file should be given as an
 The rpc method return from `RPCImport` is a promisified method.
 ```js
 import { RPCImport } from 'chitti';
-const { TestgrpcService, HelloRequest, HelloResponse, CError, CustomError } = RPCImport(require("./test.json")).testgrpc;
+const { TestgrpcService } = RPCImport(require("./test.json")).testgrpc;
 ``` 
 
 ## 4. Implementing service handlers and adding the service to server
@@ -79,9 +72,9 @@ We can add client and server interceptors while creating the server and client s
 Using chitti we provide global and service level interceptors for client and server
 <br>
 * Server Interceptors: 
-  * `custom_error_handler_interceptor`: This interceptor is by default added to all services. Refer [error handling]
+  * `custom_error_handler_interceptor`: This interceptor is by default added to all services.
 * Client Interceptors:
-  * `custom_error_call_interceptor`: This interceptor is by default added to all clients. Refer [error handling]
+  * `custom_error_call_interceptor`: This interceptor is by default added to all clients. Refer [error handling](https://github.com/NestAway/chitti/blob/master/src/node-src/README.md#8-custom-error-implementation)
 
 ```js
 //server interceptors

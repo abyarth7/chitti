@@ -17,7 +17,7 @@ module Chitti
         @call_interceptors.push(middleware_object)
       end
 
-      attr_reader :call_interceptors, :port, :host
+      attr_reader :call_interceptors, :port, :host, :credentials
 
       def host=(host)
         if host.present?
@@ -40,11 +40,11 @@ module Chitti
       end
 
       def credentials=(credentials)
-              if credentials.present?
-                @credentials = credentials
-                @is_config_changed = true
-              end
-            end
+        if credentials.present?
+            @credentials = credentials
+            @is_config_changed = true
+        end
+      end
 
       def get_static_wrapper(method_name, *args)
         if @is_config_changed

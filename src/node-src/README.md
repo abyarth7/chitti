@@ -4,7 +4,7 @@ Include [Chitti](https://github.com/NestAway/chitti) in your package.json as dep
 
 # Usage
 
-## 1. Promisifying the rpc methods
+## 1. Importing proto constants
 Consider a rpc method `hellogrpc` which takes a `helloRequest` as a request and returns `helloResponse` as a response
 ```proto
 package testgrpc;
@@ -20,12 +20,13 @@ message HelloResponse {
 ```
 >  NOTE: In this example we are using protobufjs to load the JSON file `test.json` equivalent to the above .proto file
 
-### Getting the protobuf message objects    
-Instead of directly including the json file, the json file should be given as an input to `RPCImport` module `chitti`. 
-The rpc method return from `RPCImport` is a promisified method.
+### Getting the grpc objects
+Instead of using `grpc.loadObject` to load a protobuf.js object as a grpc object, use `RPCImport` method from `chitti`. <br>
+`RPCImport` returns equivalent proto constants of the protobuf messages. All the rpc methods of the services loaded through `RPCImport` are promisified methods.
+Usage:
 ```js
 import { RPCImport } from 'chitti';
-const { TestgrpcService } = RPCImport(require("./test.json")).testgrpc;
+const { TestgrpcService, HelloRequest, HelloResponse } = RPCImport(require("./test.json")).testgrpc;
 ``` 
 
 ## 2. Implementing service handlers and adding the service to server
@@ -36,7 +37,7 @@ const { TestgrpcService } = RPCImport(require("./test.json")).testgrpc;
 import grpc from 'grpc';
 import { RPCServer } from 'chitti'; 
 
-class MyService extends TestgrpcService.Service {
+class TestService extends TestgrpcService.Service {
     async hellogrpc(req) {
         return { res_message: 'Hello Grpc !' };
     }
@@ -44,13 +45,13 @@ class MyService extends TestgrpcService.Service {
 //create server
 const grpc_server = new RPCServer();
 // adding rpc methods to service
-grpc_server.addService(MyService);
+grpc_server.addService(TestService);
 grpc_server.bind('0.0.0.0:8080', grpc.ServerCredentials.createInsecure());
 grpc_server.start();
 ```
-`TestgrpcService` is a grpc service object return by `RPCImport` 
+Here,`TestgrpcService` is a grpc object loaded through `RPCImport` 
 
-## 3. Client creating stub and calling the rpc method
+## 3. Creating stub and calling the rpc method
 Clients when calling the rpc method need not give any callback function, instead can await on the promise returned by the rpc method
 
 ### Creating a stub:
@@ -61,7 +62,7 @@ TestgrpcService.port = 8080;
 // or
 TestgrpcService.host = '0.0.0.0:8080';
 
-// Call the rpc method
+// Calling the rpc method
 (async () => await TestgrpcService.hellogrpc({ req_messsage: 'requesting hellogrpc' });)();
 ```
 A new stub is created everytime when the host and port values are changed.
@@ -69,7 +70,7 @@ A new stub is created everytime when the host and port values are changed.
 
 ## 4. Adding Interceptors to client and server
 We can add client and server interceptors while creating the server and client stub by passing  the interceptor's class. Both server and client interceptors can be added globally (added to all services/clients in the server) and also specific to a service/client. <br>
-[Chitti](https://github.com/NestAway/chitti) provides an interface to add server and client interceptors. <br>
+[Chitti](https://github.com/NestAway/chitti) provides an easy interface to add server and client interceptors. <br>
 `add_handler_interceptor`: to add server interceptors <br>
 `add_call_interceptor`: to add client interceptors <br>
 ### Default Interceptors
@@ -81,7 +82,7 @@ Refer [error handling](https://github.com/NestAway/chitti/tree/documentation/src
 ```js
 //server interceptors
 Chitti.add_handler_interceptor(TestHandleInterceptor);  // global
-MyService.add_handler_interceptor(TestHandleInterceptor); // service specific
+TestService.add_handler_interceptor(TestHandleInterceptor); // service specific
 
 //client interceptors
 Chitti.add_call_interceptor(TestCallInterceptor); //global
@@ -107,7 +108,7 @@ class TestHandleInterceptor extends HandlerInterceptor {
 }
 
 Chitti.add_handler_interceptor(TestHandleInterceptor);  // adding globally
-MyService.add_handler_interceptor(TestHandleInterceptor); // adding to specific service
+TestService.add_handler_interceptor(TestHandleInterceptor); // adding to specific service
 ```
 
 ### Implementation of client Interceptor
@@ -174,7 +175,7 @@ Error.enable([CustomError2],{code:504});
 ### Throwing an Error from handlers:
 Note: Before throwing a protobuf message instance(error object), ensure that it is Error enabled otherwise the client will not recieve its as an [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) object.
 ```js
-class MyService extends TestgrpcService.Service {
+class TestService extends TestgrpcService.Service {
     async hellogrpc(req) {
         const obj = { reason: 'error' };
         const errobj =  new CustomError2(obj);

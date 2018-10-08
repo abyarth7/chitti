@@ -9,6 +9,7 @@ module Chitti
       @stub = nil
       @host = nil
       @port = nil
+      @credentials = :this_channel_is_insecure
       @call_interceptors = nil
 
       def add_call_interceptor(middleware_object)
@@ -16,7 +17,7 @@ module Chitti
         @call_interceptors.push(middleware_object)
       end
 
-      attr_reader :call_interceptors, :port, :host
+      attr_reader :call_interceptors, :port, :host, :credentials
 
       def host=(host)
         if host.present?
@@ -38,10 +39,17 @@ module Chitti
         end
       end
 
+      def credentials=(credentials)
+        if credentials.present?
+            @credentials = credentials
+            @is_config_changed = true
+        end
+      end
+
       def get_static_wrapper(method_name, *args)
         if @is_config_changed
           fail 'Set host:port params' unless @port && @host
-          @stub = self::Stub.new("#{host}:#{port}", :this_channel_is_insecure)
+          @stub = self::Stub.new("#{host}:#{port}", #{credentials});
           @is_config_changed = false
         end
         @stub.send(method_name, *args)

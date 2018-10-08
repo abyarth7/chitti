@@ -97,7 +97,7 @@ TestgrpcService.add_call_interceptor(TestCallInterceptor); // client specific
     ```js
     import { StatsDInterceptor } from 'chitti';
 
-    TestService.add_handler_interceptor(StatsDIntercepto);
+    TestService.add_handler_interceptor(StatsDInterceptor);
     ```
     The statsD measurement `chitti_testgrpc_TestgrpcService_response_time` will give the response time for each rpc method (statsd tag), `chitti_testgrpc_TestgrpcService_success` gives the success count of each rpc method and `chitti_testgrpc_TestgrpcService_failure` gives the failure count.
 

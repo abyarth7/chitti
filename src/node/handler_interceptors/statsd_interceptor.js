@@ -20,11 +20,11 @@ class StatsDInterceptor extends _handler_interceptor2.default {
     call(request, next, ctx) {
         return _asyncToGenerator(function* () {
             try {
-                const response = yield _statsd2.default.benchmark(next(request), `${process.env.SERVICE_NAME || process.env.Service || 'unnamed-service'}.response.time` + `,api=${ctx.service}.${ctx.method}`);
-                _statsd2.default.increment(`${process.env.SERVICE_NAME || process.env.Service || 'unnamed-service'}.success` + `,api=${ctx.service}.${ctx.method}`);
+                const response = yield _statsd2.default.benchmark(next(request), `${ctx.service}.response.time,api=${ctx.method}`);
+                _statsd2.default.increment(`${ctx.service}}.success,api=${ctx.method}`);
                 return response;
             } catch (err) {
-                _statsd2.default.increment(`${process.env.SERVICE_NAME || process.env.Service || 'unnamed-service'}.failure` + `,api=${ctx.service}.${ctx.method}`);
+                _statsd2.default.increment(`${ctx.service}.failure,api=${ctx.method}`);
                 throw err;
             }
         })();

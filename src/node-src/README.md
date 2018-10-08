@@ -92,15 +92,14 @@ TestgrpcService.add_call_interceptor(TestCallInterceptor); // client specific
 ```
 
 ### Other Interceptors
-* `StatsDInterceptor`: This interceptor can be added to measure the time taken to execute each rpc method of a service and the number of times the given handler is success or failure
-    * Environment variables `SERVICE_NAME` or `Service` has to  be set <br>
+* `StatsDInterceptor`: This interceptor can be added to measure the time taken to execute each rpc method of a service and the number of times the given handler is success or failure <br>
     Usage:
     ```js
     import { StatDInterceptor } from 'chitti';
 
     TestService.add_handler_interceptor(StatDInterceptor);
     ```
-    If `Service` env variable is set as `TestService`, then the statsD tag would be `TestService.TestgrpcService.hellogrpc`
+    The statsD tag `TestgrpcService_response_time` will give the response time for each rpc method, `TestgrpcService_success` gives the success count of each rpc menthod and `TestgrpcService_failure` gives the failure count.
 
 ### Implementation of server Interceptor
 Any interceptor should extends `HandlerInterceptor`

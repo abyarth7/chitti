@@ -6,16 +6,13 @@ class StatsDInterceptor extends HandlerInterceptor {
         try {
             const response = await StatsD.benchmark(
                 next(request),
-                `${process.env.SERVICE_NAME || process.env.Service || 'unnamed-service'}.response.time` +
-                `,api=${ctx.service}.${ctx.method}`,
+                `${ctx.service}.response.time,api=${ctx.method}`,
             );
-            StatsD.increment(`${process.env.SERVICE_NAME || process.env.Service || 'unnamed-service'}.success`
-                + `,api=${ctx.service}.${ctx.method}`);
+            StatsD.increment(`${ctx.service}}.success,api=${ctx.method}`);
             return response;
         }
         catch (err) {
-            StatsD.increment(`${process.env.SERVICE_NAME || process.env.Service || 'unnamed-service'}.failure`
-                + `,api=${ctx.service}.${ctx.method}`);
+            StatsD.increment(`${ctx.service}.failure,api=${ctx.method}`);
             throw err;
         }
     }

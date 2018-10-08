@@ -20,11 +20,11 @@ class StatsDInterceptor extends _handler_interceptor2.default {
     call(request, next, ctx) {
         return _asyncToGenerator(function* () {
             try {
-                const response = yield _statsd2.default.benchmark(next(request), `${ctx.service}.response.time,api=${ctx.method}`);
-                _statsd2.default.increment(`${ctx.service}}.success,api=${ctx.method}`);
+                const response = yield _statsd2.default.benchmark(next(request), `chitti.${ctx.service}.response.time,method=${ctx.method}`);
+                _statsd2.default.increment(`chitti.${ctx.service}.success,method=${ctx.method}`);
                 return response;
             } catch (err) {
-                _statsd2.default.increment(`${ctx.service}.failure,api=${ctx.method}`);
+                _statsd2.default.increment(`chitti.${ctx.service}.failure,method=${ctx.method}`);
                 throw err;
             }
         })();

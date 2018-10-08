@@ -92,14 +92,14 @@ TestgrpcService.add_call_interceptor(TestCallInterceptor); // client specific
 ```
 
 ### Other Interceptors
-* `StatsDInterceptor`: This interceptor can be added to measure the time taken to execute each rpc method of a service and the number of times the given handler is success or failure <br>
+* `StatsDInterceptor`: This interceptor can be added to send the handlers' response time, failure and success metrics to a statsd `UDP` server listening on `STATSD_PORT` (defaults to 8125) at `STATSD_ADDR` (env variables)  <br>
     Usage:
     ```js
-    import { StatDInterceptor } from 'chitti';
+    import { StatsDInterceptor } from 'chitti';
 
-    TestService.add_handler_interceptor(StatDInterceptor);
+    TestService.add_handler_interceptor(StatsDIntercepto);
     ```
-    The statsD tag `TestgrpcService_response_time` will give the response time for each rpc method, `TestgrpcService_success` gives the success count of each rpc menthod and `TestgrpcService_failure` gives the failure count.
+    The statsD measurement `chitti_testgrpc_TestgrpcService_response_time` will give the response time for each rpc method (statsd tag), `chitti_testgrpc_TestgrpcService_success` gives the success count of each rpc method and `chitti_testgrpc_TestgrpcService_failure` gives the failure count.
 
 ### Implementation of server Interceptor
 Any interceptor should extends `HandlerInterceptor`

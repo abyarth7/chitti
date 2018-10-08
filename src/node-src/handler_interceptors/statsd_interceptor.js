@@ -6,13 +6,13 @@ class StatsDInterceptor extends HandlerInterceptor {
         try {
             const response = await StatsD.benchmark(
                 next(request),
-                `${ctx.service}.response.time,api=${ctx.method}`,
+                `chitti.${ctx.service}.response.time,method=${ctx.method}`,
             );
-            StatsD.increment(`${ctx.service}}.success,api=${ctx.method}`);
+            StatsD.increment(`chitti.${ctx.service}.success,method=${ctx.method}`);
             return response;
         }
         catch (err) {
-            StatsD.increment(`${ctx.service}.failure,api=${ctx.method}`);
+            StatsD.increment(`chitti.${ctx.service}.failure,method=${ctx.method}`);
             throw err;
         }
     }

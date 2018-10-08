@@ -57,6 +57,18 @@ const RPCClient = grpcService => {
                 static get port() {
                     return this.envVars.port;
                 }
+
+                static set credentials(credentials) {
+                    if (credentials) {
+                        this.envVars.credentials = credentials;
+                        isConfigChanged = true;
+                    }
+                }
+
+                static get credentials() {
+                    if (!this.envVars.credentials) this.envVars.credentials = grpc.credentials.createInsecure();
+                    return this.envVars.credentials;
+                }
             },
         }[serviceName];
         ServiceClient.Service = { [serviceName]: class {} }[serviceName];
@@ -74,7 +86,7 @@ const RPCClient = grpcService => {
                     if (!(this.port && this.host)) {
                         throw new Error('Set host:port params');
                     }
-                    this.stub = new this(`${this.host}:${this.port}`, grpc.credentials.createInsecure());
+                    this.stub = new this(`${this.host}:${this.port}`, this.credentials);
                     isConfigChanged = false;
                 }
                 return this.stub[methodName](...args);

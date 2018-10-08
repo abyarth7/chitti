@@ -56,11 +56,13 @@ Clients when calling the rpc method need not give any callback function, instead
 
 ### Creating a stub:
 ```js
-// Get 'TestgrpcService' from RPCImport
+// load 'TestgrpcService' from RPCImport
 TestgrpcService.host = '0.0.0.0';
 TestgrpcService.port = 8080;
 // or
 TestgrpcService.host = '0.0.0.0:8080';
+
+TestgrpcService.credentials = grpc.credentials.createInsecure(); 
 
 // Calling the rpc method
 (async () => await TestgrpcService.hellogrpc({ req_messsage: 'requesting hellogrpc' });)();

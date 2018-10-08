@@ -1,31 +1,17 @@
 # Chitti
-[chitti](https://github.com/NestAway/chitti) wraps [gRPC](https://grpc.io) to provide a simpler, generic and extensible way to implement remote procedure calls. Before going through chitti, you need to understand [gRPC](https://grpc.io).
-##features
-> Chitti was implemented for Ruby and Node. Using chitti can add custom interceptors on both client and server side. Chitti provides a feature that helps in adding interceptors globally and specific to service. By default we added a custom error handleing interceptor which makes a protobuf message to throw as an error.
-
-Note: 
-> For Node protobuf messages automatically promisified by chitti.
-
-
-## Installation
-
-For Node:
-Include  [chitti](https://github.com/NestAway/chitti) in your package.json as dependency and run `npm install` to install package.
-//in package.json
-```js
-"dependencies": {
-    "chitti": "git+ssh://git@github.com/NestAway/chitti.git"
-  }
-```
-
-For Ruby:
-`gem 'chitti', :git => 'git@github.com:NestAway/chitti.git', :branch => 'master'`
+`Chitti` is a wrapper on [gRPC](https://grpc.io) to provide a simpler, generic and extensible way to implement remote procedure calls. 
+<br>
+## Features
+ * `Chitti` provides an easy interface to add interceptors both globally and service specific on client side as well as service side
+ *  Chitti provides a local-like error handling model where service handlers throw custom exceptions which clients can handle
+ * Promisifing rpc calls and rpc method implementation in `NodeJs`: 
+    * The handler implementation of a rpc method can diretctly return the protobuf message, instead of adding a callback function
+    * On the client side, while making a rpc to a grpc service, instead of adding a callback function, clients can `await` on the promise returned by the service
 
 ## Usage
-For Node:
-Go through [chiiti ruby documentation](https://github.com/NestAway/chitti/blob/master/src/ruby/README.md).
-For Ruby:
-Go through [chitti node documentation](https://github.com/NestAway/chitti/blob/master/src/node-src/README.md).
+For `Ruby` applications use [Chitti Ruby](https://github.com/NestAway/chitti/blob/master/src/ruby) 
+<br>
+For `NodeJs` applications use [Chitti NodeJs](https://github.com/NestAway/chitti/blob/master/src/node-src).
 
 # License
 The package or gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).

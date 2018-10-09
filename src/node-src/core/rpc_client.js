@@ -2,10 +2,10 @@ import lodash from 'lodash';
 import grpc from 'grpc';
 import Chitti from './chitti';
 
-const global_call_interceptors = [];
+const GlobalCallInterceptors = [];
 
 Chitti.add_call_interceptor = CallInterceptor => {
-    global_call_interceptors.push(CallInterceptor);
+    GlobalCallInterceptors.push(CallInterceptor);
 };
 
 const RPCClient = grpcService => {
@@ -17,7 +17,7 @@ const RPCClient = grpcService => {
                 constructor(...args) {
                     const num_args = args.length;
                     const interceptors = lodash.concat(
-                        [...global_call_interceptors],
+                        [...GlobalCallInterceptors],
                         [...ServiceClient.call_interceptors],
                     );
                     if (num_args === 2) args.push({ interceptors: [...interceptors] });

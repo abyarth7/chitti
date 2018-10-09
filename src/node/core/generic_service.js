@@ -16,9 +16,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const global_handler_interceptors = [];
+const GlobalHandlerInterceptors = [];
 
-_chitti2.default.add_handler_interceptor = HandlerInterceptorClass => global_handler_interceptors.push(new HandlerInterceptorClass());
+_chitti2.default.add_handler_interceptor = HandlerInterceptorClass => GlobalHandlerInterceptors.push(new HandlerInterceptorClass());
 
 class GenericService {
     constructor(service, implementation) {
@@ -62,7 +62,7 @@ class GenericService {
         var _this = this;
 
         _lodash2.default.each(this.implementation, (fn, name) => {
-            const middlewares = _lodash2.default.concat([...global_handler_interceptors], [...this.middlewares].reverse());
+            const middlewares = _lodash2.default.concat([...GlobalHandlerInterceptors], [...this.middlewares].reverse());
             const totalMiddleWares = middlewares.length;
             this.wrappedImplementation[name] = (() => {
                 var _ref = _asyncToGenerator(function* (request, callback) {

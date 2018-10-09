@@ -5,6 +5,7 @@ require 'chitti/core/grpc_error'
 require 'chitti/call_interceptors/grpc_error_call_interceptor'
 require 'chitti/handler_interceptors/grpc_error_handler_interceptor'
 
+# Implements methods for global interceptors
 module Chitti
   GlobalCallInterceptors = []
   GlobalHandlerInterceptors = []

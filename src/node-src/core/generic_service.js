@@ -1,10 +1,10 @@
 import lodash from 'lodash';
 import Chitti from './chitti';
 
-const global_handler_interceptors = [];
+const GlobalHandlerInterceptors = [];
 
 Chitti.add_handler_interceptor = HandlerInterceptorClass =>
-    global_handler_interceptors.push(new HandlerInterceptorClass());
+    GlobalHandlerInterceptors.push(new HandlerInterceptorClass());
 
 export default class GenericService {
     constructor(service, implementation) {
@@ -47,7 +47,7 @@ export default class GenericService {
     wrap() {
         lodash.each(this.implementation, (fn, name) => {
             const middlewares = lodash.concat(
-                [...global_handler_interceptors],
+                [...GlobalHandlerInterceptors],
                 [...this.middlewares].reverse(),
             );
             const totalMiddleWares = middlewares.length;

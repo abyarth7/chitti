@@ -7,7 +7,9 @@ require_relative 'health'
 module Grpc
   module Health
     module V1
+      # Health package
       module Health
+        # Service class
         class Service
           include GRPC::GenericService
 

@@ -209,9 +209,7 @@ class TestService extends TestgrpcService.Service {
         // =>
         //  CustomError2 {
         //  reason: ' error',
-        //  code: 502,
-        //  details: 'nodetestgrpc.CustomError',
-        //  metadata: Metadata { _internal_repr: {} } }
+        //  code: 502 }
         console.log(error.reason); // => 'error'
         console.log(error.code); // => 502
         console.log(error.details); // => 'testgrpc.CustomError2        

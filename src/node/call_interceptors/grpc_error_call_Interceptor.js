@@ -27,13 +27,9 @@ function GRPCErrorCallInterceptor(options, nextCall) {
                         let errobj;
                         if (status.metadata.get('grpc_custom_error')[0]) {
                             errobj = JSON.parse(status.metadata.get('grpc_custom_error')[0]);
-                            status.metadata.remove('grpc_custom_error');
                         }
                         if (errobj && _grpc_error.GRPCErrorRegistry[errobj.type]) {
                             const newError = new _grpc_error.GRPCErrorRegistry[errobj.type].ctr(_grpc_error.GRPCErrorRegistry[errobj.type].ctr.decode(Buffer.from(errobj.payload, 'base64')));
-                            newError.code = status.code;
-                            newError.details = status.details;
-                            newError.metadata = status.metadata;
                             nextStatus(newError);
                         } else nextStatus(status);
                     } else {

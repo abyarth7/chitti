@@ -43,7 +43,6 @@ class GRPCErrorHandlerInterceptor extends _handler_interceptor2.default {
                         }
                         const err_obj = new Error('GRPC Custom Error');
                         err_obj.code = _grpc_error.GRPCErrorRegistry[error_handler].code;
-                        err_obj.details = error_handler;
                         err_obj.metadata = err.metadata instanceof _grpc2.default.Metadata ? err.metadata : new _grpc2.default.Metadata();
                         const user_defined_error = {};
                         user_defined_error.type = error_handler;

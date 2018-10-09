@@ -44,8 +44,6 @@ module Chitti
       def get_static_wrapper(method_name, *args)
         if @is_config_changed
           fail 'Set host:port params' unless @port && @host
-          puts credentials.to_s
-          puts host
           @stub = self::Stub.new("#{host}:#{port}", credentials || :this_channel_is_insecure)
           @is_config_changed = false
         end

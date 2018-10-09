@@ -1,4 +1,5 @@
 require 'chitti/logger/logger'
+require 'chitti/logger/railtie' if defined? ::Rails::Railtie
 require 'chitti/core/generic_service'
 require 'chitti/core/rpc_server'
 require 'chitti/core/grpc_error'

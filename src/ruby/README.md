@@ -48,7 +48,7 @@ Implementation of the rpc methods
 
 
 ```ruby
-class  TestgrpcService < Testgrpc::TestgrpcService::Service
+class  TestService < Testgrpc::TestgrpcService::Service
   def hellogrpc(req, _unused_call)
       Log.log.info "Received call in hellogrpc #{req.to_h}"
       response = Testgrpc::HelloResponse.new
@@ -66,7 +66,7 @@ require 'chitti'
 
 def main
     @server = Chitti::RpcServer.new(host_port: '0.0.0.0:50052', pool_size: 10, max_waiting_requests: 10, interceptors: [])
-    @server.handle(TestgrpcService) # add whatever service implementations you want to include in server
+    @server.handle(TestService) # add whatever service implementations you want to include in server
     @server.start # start the server
 end
 ```
@@ -97,14 +97,15 @@ By default we added one handler interceptors(custom_error_handler_interceptor) a
 
 #client interceptors:
 
-Chitti.add_call_interceptor()   #global
-MyService.add_call_interceptor()  #service_specific
+Chitti.add_call_interceptor(TestCallInterceptor.new)   #global
+Testgrpc::TestgrpcService.add_call_interceptor(TestCallInterceptor.new)  #service_specific
 
 
 #server interceptors:
 
-Chitti.add_handler_interceptor()  #global
-MyService.add_handler_interceptor() #service_specific
+Chitti.add_handler_interceptor(TestHandlerInterceptor.new)  #global
+
+TestService.add_handler_interceptor(TestHandlerInterceptor.new) #service_specific
 
 ```
 
@@ -112,16 +113,16 @@ MyService.add_handler_interceptor() #service_specific
 Example Implementation of server Interceptor
 
 ```ruby
-class ServerRequestLogInterceptor < GRPC::ServerInterceptor
+class TestHandlerInterceptor < GRPC::ServerInterceptor
   def request_response(request:, call:, method:)
     response = yield
     response
   end
 end
 
-Chitti.add_handler_interceptor(ServerRequestLogInterceptor.new) # adding globally
+Chitti.add_handler_interceptor(TestHandlerInterceptor.new) # adding globally
 
-Testgrpc::TestgrpcService.add_handler_interceptor(ServerRequestLogInterceptor.new) # adding service specific
+TestService.add_handler_interceptor(TestHandlerInterceptor.new) # adding service specific
 
 ```
 
@@ -131,16 +132,16 @@ Example Implementation of client Interceptor
 ```ruby
 require 'grpc'
 
-class TaskFutureClientInterceptor < GRPC::ClientInterceptor
+class TestCallInterceptor < GRPC::ClientInterceptor
   def request_response(request:, call:, method:, metadata:)
     response = yield
     response
   end
 end
 
-Chitti.add_call_interceptor(TaskFutureClientInterceptor.new) # adding globally
+Chitti.add_call_interceptor(TestCallInterceptor.new) # adding globally
 
-Testgrpc::TestgrpcService.add_call_interceptor(TaskFutureClientInterceptor.new) # adding service specific
+Testgrpc::TestgrpcService.add_call_interceptor(TestCallInterceptor.new) # adding service specific
 
 ```
 

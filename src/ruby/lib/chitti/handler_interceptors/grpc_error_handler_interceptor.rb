@@ -1,8 +1,9 @@
 require 'grpc'
 require 'base64'
 
+# Custom error handler interceptor
 class GRPCErrorHandlerInterceptor < GRPC::ServerInterceptor
-  def request_response(request:, call:, method:)
+  def request_response(*)
     begin
       response = yield
     rescue Exception => exception

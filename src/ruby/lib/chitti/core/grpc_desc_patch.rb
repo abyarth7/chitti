@@ -21,4 +21,7 @@ GRPC::RpcDesc.class_eval do
   end
 end
 
-GRPC::ActiveCall::InterceptableView = GRPC::ActiveCall.view_class(:deadline, :metadata, :status)
+GRPC::ActiveCall::InterceptableView = GRPC::ActiveCall.view_class(
+  :deadline,
+  :metadata,
+  :status)

@@ -18,10 +18,10 @@ var _chitti2 = _interopRequireDefault(_chitti);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const global_call_interceptors = [];
+const GlobalCallInterceptors = [];
 
 _chitti2.default.add_call_interceptor = CallInterceptor => {
-    global_call_interceptors.push(CallInterceptor);
+    GlobalCallInterceptors.push(CallInterceptor);
 };
 
 const RPCClient = grpcService => {
@@ -32,7 +32,7 @@ const RPCClient = grpcService => {
             [serviceName]: class extends grpcService {
                 constructor(...args) {
                     const num_args = args.length;
-                    const interceptors = _lodash2.default.concat([...global_call_interceptors], [...ServiceClient.call_interceptors]);
+                    const interceptors = _lodash2.default.concat([...GlobalCallInterceptors], [...ServiceClient.call_interceptors]);
                     if (num_args === 2) args.push({ interceptors: [...interceptors] });else if (num_args === 3 && args[2] instanceof Object) {
                         if (!Array.isArray(args[2].interceptors)) args[2].interceptors = [];
                         args[2].interceptors = _lodash2.default.concat(args[2].interceptors, _lodash2.default.reverse(ServiceClient.call_interceptors));

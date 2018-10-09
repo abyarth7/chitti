@@ -1,8 +1,9 @@
 require 'grpc'
 require 'json'
 
+# Custom error call interceptor
 class GRPCErrorCallInterceptor < GRPC::ClientInterceptor
-  def request_response(request:, call:, method:, metadata:)
+  def request_response(*)
     begin
       response = yield
     rescue Exception => error

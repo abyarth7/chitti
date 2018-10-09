@@ -2,6 +2,7 @@ require 'active_support'
 require 'active_support/core_ext'
 
 module Chitti
+  # Custom error registration
   module Errors
     GRPCErrorRegistry = {}
     def self.enable(error_classes, options)

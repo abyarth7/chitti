@@ -1,32 +1,27 @@
 require 'stoplight'
 require 'statsd-instrument'
 
+# Returns a generic grpc service
 module Chitti
   def self.get_hybrid_module(klass)
     rpc_descs = klass::Service.rpc_descs
     Module.new do
-      @is_config_changed = true
-      @stub = nil
-      @host = nil
-      @port = nil
-      @credentials = :this_channel_is_insecure
-      @call_interceptors = nil
+      attr_reader :call_interceptors, :port, :host, :credentials
 
       def add_call_interceptor(middleware_object)
         @call_interceptors = [] unless call_interceptors
         @call_interceptors.push(middleware_object)
+        @is_config_changed = true
       end
-
-      attr_reader :call_interceptors, :port, :host, :credentials
 
       def host=(host)
         if host.present?
-          spilt_host = host.split(':')
-          if spilt_host.length == 2
-            @host = spilt_host[0]
-            @port = spilt_host[1]
+          split_host = host.split(':')
+          if split_host.length == 2
+            @host = split_host[0]
+            @port = split_host[1]
           else
-            @host = spilt_host[0]
+            @host = split_host[0]
           end
         end
         @is_config_changed = true
@@ -41,15 +36,17 @@ module Chitti
 
       def credentials=(credentials)
         if credentials.present?
-            @credentials = credentials
-            @is_config_changed = true
+          @credentials = credentials
+          @is_config_changed = true
         end
       end
 
       def get_static_wrapper(method_name, *args)
         if @is_config_changed
           fail 'Set host:port params' unless @port && @host
-          @stub = self::Stub.new("#{host}:#{port}", #{credentials});
+          puts credentials.to_s
+          puts host
+          @stub = self::Stub.new("#{host}:#{port}", credentials || :this_channel_is_insecure)
           @is_config_changed = false
         end
         @stub.send(method_name, *args)
@@ -74,11 +71,9 @@ module Chitti
             name_split = self.class.name.split('::')
             name_split.delete_at(name_split.length - 1)
             klass = name_split.join('::').constantize
-            if kw[:interceptors]
-              kw[:interceptors] = kw[:interceptors] + klass.call_interceptors || [] + Chitti::GlobalCallInterceptors
-            else
-              kw[:interceptors] = klass.call_interceptors || [] + Chitti::GlobalCallInterceptors
-            end
+            kw[:interceptors] ||= []
+            kw[:interceptors] += klass.call_interceptors.reverse if klass.call_interceptors
+            kw[:interceptors] += Chitti::GlobalCallInterceptors.reverse
             super(host, creds, **kw)
           end
           instance_meths.each do |meth|

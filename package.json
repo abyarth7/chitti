@@ -26,7 +26,7 @@
     "health": "src/node-src/bin/health"
   },
   "dependencies": {
-    "grpc": "^1.12.3",
+    "grpc": "^1.15.1",
     "grpc-health-check": "^1.6.6",
     "lodash": "^4.17.5",
     "statsd-client": "^0.4.2",

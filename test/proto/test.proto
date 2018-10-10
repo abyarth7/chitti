@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package testgrpc;
+
+service TestgrpcService {
+  rpc hellogrpc (HelloRequest) returns (HelloResponse) {}
+}
+
+message HelloRequest {
+    string req_message = 1 ;
+}
+
+message HelloResponse {
+    string res_message = 1;
+}
+
+message CustomError {
+	string custom = 1;
+}

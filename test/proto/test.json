@@ -1,0 +1,40 @@
+{
+  "nested": {
+    "testgrpc": {
+      "nested": {
+        "TestgrpcService": {
+          "methods": {
+            "hellogrpc": {
+              "requestType": "HelloRequest",
+              "responseType": "HelloResponse"
+            }
+          }
+        },
+        "HelloRequest": {
+          "fields": {
+            "req_message": {
+              "type": "string",
+              "id": 1
+            }
+          }
+        },
+        "HelloResponse": {
+          "fields": {
+            "res_message": {
+              "type": "string",
+              "id": 1
+            }
+          }
+        },
+        "CustomError": {
+          "fields": {
+            "custom": {
+              "type": "string",
+              "id": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

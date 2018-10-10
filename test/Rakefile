@@ -1,0 +1,3 @@
+require 'rubocop/rake_task'
+RuboCop::RakeTask.new
+Dir.glob('./ruby/tasks/*.rake').each { |r| load r}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package sample.test;
+
+message PersonId {
+    uint64 id = 1;
+}
+
+message PersonDetails {
+    uint64 id = 1;
+    string email = 2;
+    string name = 3;
+}
+
+service TestService {
+    rpc GetUserDetails(PersonId) returns (PersonDetails);
+}

@@ -26,7 +26,6 @@ _chitti2.default.add_call_interceptor = CallInterceptor => {
 
 const RPCClient = grpcService => {
     if (!grpcService.isClientWrapped) {
-        let isConfigChanged = true;
         const serviceName = _getServiceName(grpcService);
         const ServiceClient = {
             [serviceName]: class extends grpcService {
@@ -49,7 +48,7 @@ const RPCClient = grpcService => {
                     const [host, port] = hostStr.split(':');
                     this.envVars.host = host;
                     if (port) this.envVars.port = port;
-                    isConfigChanged = true;
+                    this.isConfigChanged = true;
                 }
 
                 static get host() {
@@ -59,7 +58,7 @@ const RPCClient = grpcService => {
                 static set port(port) {
                     if (port) {
                         this.envVars.port = port;
-                        isConfigChanged = true;
+                        this.isConfigChanged = true;
                     }
                 }
 
@@ -70,7 +69,7 @@ const RPCClient = grpcService => {
                 static set credentials(credentials) {
                     if (credentials) {
                         this.envVars.credentials = credentials;
-                        isConfigChanged = true;
+                        this.isConfigChanged = true;
                     }
                 }
 
@@ -80,6 +79,7 @@ const RPCClient = grpcService => {
                 }
             }
         }[serviceName];
+        ServiceClient.isConfigChanged = true;
         ServiceClient.Service = { [serviceName]: class {} }[serviceName];
         ServiceClient.Service.ServiceClient = ServiceClient;
         ServiceClient.Service.handler_interceptors = [];
@@ -91,12 +91,12 @@ const RPCClient = grpcService => {
         ServiceClient.isClientWrapped = true;
         ServiceClient._getStaticWrapper = function (methodName) {
             return function (...args) {
-                if (isConfigChanged) {
+                if (this.isConfigChanged) {
                     if (!(this.port && this.host)) {
                         throw new Error('Set host:port params');
                     }
                     this.stub = new this(`${this.host}:${this.port}`, this.credentials);
-                    isConfigChanged = false;
+                    this.isConfigChanged = false;
                 }
                 return this.stub[methodName](...args);
             };

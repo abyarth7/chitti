@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StatsDInterceptor = exports.Chitti = exports.Error = exports.RPCClient = exports.RPCImport = exports.RPCServer = exports.HandlerInterceptor = undefined;
+exports.StatsDInterceptor = exports.Chitti = exports.Error = exports.RPCService = exports.RPCClient = exports.RPCImport = exports.RPCServer = exports.HandlerInterceptor = undefined;
 
 var _chitti = require('./core/chitti');
 
@@ -24,6 +24,10 @@ var _rpc_import2 = _interopRequireDefault(_rpc_import);
 var _rpc_client = require('./core/rpc_client');
 
 var _rpc_client2 = _interopRequireDefault(_rpc_client);
+
+var _rpc_service = require('./core/rpc_service');
+
+var _rpc_service2 = _interopRequireDefault(_rpc_service);
 
 var _grpc_error = require('./core/grpc_error');
 
@@ -48,6 +52,7 @@ exports.HandlerInterceptor = _handler_interceptor2.default;
 exports.RPCServer = _rpc_server2.default;
 exports.RPCImport = _rpc_import2.default;
 exports.RPCClient = _rpc_client2.default;
+exports.RPCService = _rpc_service2.default;
 exports.Error = _grpc_error.Error;
 exports.Chitti = _chitti2.default;
 exports.StatsDInterceptor = _statsd_interceptor2.default;

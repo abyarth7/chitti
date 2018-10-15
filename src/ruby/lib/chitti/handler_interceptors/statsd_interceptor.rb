@@ -1,6 +1,6 @@
 require 'statsd-instrument'
 
-class StatsdMiddleware < ::GRPC::ServerInterceptor
+class StatsdInterceptor < ::GRPC::ServerInterceptor
   def request_response(request:, call:, method:)
     service_name = method.receiver.class.respond_to?(:service_name) ? method.receiver.class.service_name : method.receiver.class.name
     begin

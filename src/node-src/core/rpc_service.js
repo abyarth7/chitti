@@ -6,7 +6,7 @@ const GlobalHandlerInterceptors = [];
 Chitti.add_handler_interceptor = HandlerInterceptorClass =>
     GlobalHandlerInterceptors.push(new HandlerInterceptorClass());
 
-export default class GenericService {
+export default class RPCService {
     constructor(service, implementation) {
         if (service.constructor === this.constructor) return service;
         this.service = service.service;

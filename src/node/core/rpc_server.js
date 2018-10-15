@@ -16,9 +16,9 @@ var _health_service_handler = require('../health/health_service_handler');
 
 var _health_service_handler2 = _interopRequireDefault(_health_service_handler);
 
-var _generic_service = require('./generic_service');
+var _rpc_service = require('./rpc_service');
 
-var _generic_service2 = _interopRequireDefault(_generic_service);
+var _rpc_service2 = _interopRequireDefault(_rpc_service);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30,10 +30,10 @@ class RPCServer extends _grpc2.default.Server {
     }
 
     addService(serviceInst, implementation) {
-        if (serviceInst.constructor === _generic_service2.default) {
+        if (serviceInst.constructor === _rpc_service2.default) {
             super.addService(serviceInst.service, serviceInst.wrappedImplementation);
         } else if (implementation === undefined && typeof serviceInst === 'function' && serviceInst.ServiceClient) {
-            const grpc_service = _generic_service2.default.handle(serviceInst.ServiceClient)(serviceInst);
+            const grpc_service = _rpc_service2.default.handle(serviceInst.ServiceClient)(serviceInst);
             this.addService(grpc_service);
         } else {
             super.addService(serviceInst, implementation);

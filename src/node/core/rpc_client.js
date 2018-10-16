@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -32,7 +34,8 @@ const RPCClient = grpcService => {
                 constructor(...args) {
                     const num_args = args.length;
                     const interceptors = _lodash2.default.concat([...GlobalCallInterceptors], [...ServiceClient.call_interceptors]);
-                    if (num_args === 2) args.push({ interceptors: [...interceptors] });else if (num_args === 3 && args[2] instanceof Object) {
+                    if (num_args === 2) args.push(_extends({}, ServiceClient.options, { interceptors: [...interceptors] }));else if (num_args === 3 && args[2] instanceof Object) {
+                        args[2] = _extends({}, args[2], ServiceClient.options);
                         if (!Array.isArray(args[2].interceptors)) args[2].interceptors = [];
                         args[2].interceptors = _lodash2.default.concat(args[2].interceptors, _lodash2.default.reverse(ServiceClient.call_interceptors));
                     }
@@ -77,6 +80,18 @@ const RPCClient = grpcService => {
                     if (!this.envVars.credentials) this.envVars.credentials = _grpc2.default.credentials.createInsecure();
                     return this.envVars.credentials;
                 }
+
+                static set options(options) {
+                    if (options && typeof options === 'object') {
+                        this.envVars.options = options;
+                        this.isConfigChanged = true;
+                    }
+                }
+
+                static get options() {
+                    if (!this.envVars.options) this.envVars.options = {};
+                    return this.envVars.options;
+                }
             }
         }[serviceName];
         ServiceClient.isConfigChanged = true;
@@ -95,7 +110,7 @@ const RPCClient = grpcService => {
                     if (!(this.port && this.host)) {
                         throw new Error('Set host:port params');
                     }
-                    this.stub = new this(`${this.host}:${this.port}`, this.credentials);
+                    this.stub = new this(`${this.host}:${this.port}`, this.credentials, this.options);
                     this.isConfigChanged = false;
                 }
                 return this.stub[methodName](...args);

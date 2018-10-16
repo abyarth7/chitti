@@ -19,8 +19,9 @@ const RPCClient = grpcService => {
                         [...GlobalCallInterceptors],
                         [...ServiceClient.call_interceptors],
                     );
-                    if (num_args === 2) args.push({ interceptors: [...interceptors] });
+                    if (num_args === 2) args.push({ ...ServiceClient.options, interceptors: [...interceptors] });
                     else if (num_args === 3 && args[2] instanceof Object) {
+                        args[2] = { ...args[2], ...ServiceClient.options };
                         if (!Array.isArray(args[2].interceptors)) args[2].interceptors = [];
                         args[2].interceptors = lodash.concat(
                             args[2].interceptors,
@@ -68,6 +69,18 @@ const RPCClient = grpcService => {
                     if (!this.envVars.credentials) this.envVars.credentials = grpc.credentials.createInsecure();
                     return this.envVars.credentials;
                 }
+
+                static set options(options) {
+                    if (options && typeof options === 'object') {
+                        this.envVars.options = options;
+                        this.isConfigChanged = true;
+                    }
+                }
+
+                static get options() {
+                    if (!this.envVars.options) this.envVars.options = {};
+                    return this.envVars.options;
+                }
             },
         }[serviceName];
         ServiceClient.isConfigChanged = true;
@@ -86,7 +99,7 @@ const RPCClient = grpcService => {
                     if (!(this.port && this.host)) {
                         throw new Error('Set host:port params');
                     }
-                    this.stub = new this(`${this.host}:${this.port}`, this.credentials);
+                    this.stub = new this(`${this.host}:${this.port}`, this.credentials, this.options);
                     this.isConfigChanged = false;
                 }
                 return this.stub[methodName](...args);

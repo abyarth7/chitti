@@ -79,8 +79,7 @@ const RPCClient = grpcService => {
                 }
 
                 static get options() {
-                    if (!this.envVars.options) this.envVars.options = {};
-                    return this.envVars.options;
+                    return this.envVars.options || {};
                 }
             },
         }[serviceName];

@@ -25,7 +25,7 @@ const RPCClient = grpcService => {
                         if (!Array.isArray(args[2].interceptors)) args[2].interceptors = [];
                         args[2].interceptors = lodash.concat(
                             args[2].interceptors,
-                            lodash.reverse(ServiceClient.call_interceptors),
+                            interceptors,
                         );
                     }
                     super(...args);

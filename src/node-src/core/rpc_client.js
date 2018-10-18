@@ -17,8 +17,9 @@ const RPCClient = grpcService => {
                     const num_args = args.length;
                     const interceptors = lodash.concat(
                         [...GlobalCallInterceptors],
-                        [...ServiceClient.call_interceptors].reverse(),
+                        [...ServiceClient.call_interceptors],
                     );
+                    lodash.reverse(interceptors);
                     if (num_args === 2) args.push({ ...ServiceClient.options, interceptors: [...interceptors] });
                     else if (num_args === 3 && args[2] instanceof Object) {
                         args[2] = { ...args[2], ...ServiceClient.options };

@@ -1,0 +1,13 @@
+###############################################################################
+#                                  README
+# You cannot merge your PR till at least one owner approval is present per file.
+# In case of owner is not available, get the necessary approvals from others and ADMINS can merge.
+# Currently Anuhya has admin access.
+################################################################################
+
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @global-owner1 and @global-owner2 will be requested for
+# review when someone opens a pull request.
+* @anuhyac

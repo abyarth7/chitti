@@ -14,6 +14,7 @@ const GRPCRegisterErrors = (msg_classes, options = {}) => {
         GRPCErrorRegistry[registryKey] = {};
         GRPCErrorRegistry[registryKey].code = Number.isNaN(code) ? 500 : code;
         msg_class.isErrorEnabled = true;
+        msg_class.code = GRPCErrorRegistry[registryKey].code;
         GRPCErrorRegistry[registryKey].ctr = msg_class;
     });
 };
@@ -21,6 +22,10 @@ const GRPCRegisterErrors = (msg_classes, options = {}) => {
 Object.assign(Error, {
     enable(errorMessages, options) {
         return GRPCRegisterErrors(errorMessages, options);
+    },
+    getErrorClass(errorType) {
+        if (GRPCErrorRegistry[errorType]) return GRPCErrorRegistry[errorType].ctr;
+        return undefined;
     },
 });
 

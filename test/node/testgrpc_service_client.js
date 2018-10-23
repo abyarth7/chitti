@@ -58,9 +58,14 @@ Chitti.add_call_interceptor(GRPCTestCallInterceptor2);
 
 const meta = new grpc.Metadata();
 (async () => {
-    const res = await TestgrpcService.hellogrpc(
-        { req_message: 'requesting hellogrpc' }, meta,
-        { deadline: (new Date().getTime()) + 30000 },
-    );
-    console.log(res);
+    try {
+        const res = await TestgrpcService.hellogrpc(
+            { req_message: 'requesting hellogrpc' }, meta,
+            { deadline: (new Date().getTime()) + 30000 },
+        );
+        console.log(res);
+    }
+    catch (err) {
+        console.log(err);
+    }
 })();

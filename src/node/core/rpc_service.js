@@ -20,6 +20,8 @@ const GlobalHandlerInterceptors = [];
 
 _chitti2.default.add_handler_interceptor = HandlerInterceptorClass => GlobalHandlerInterceptors.push(new HandlerInterceptorClass());
 
+_chitti2.default.get_handler_interceptors = () => [...GlobalHandlerInterceptors];
+
 class RPCService {
     constructor(service, implementation) {
         if (service.constructor === this.constructor) return service;

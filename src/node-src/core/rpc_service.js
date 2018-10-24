@@ -20,6 +20,7 @@ export default class RPCService {
         this.implementation = implementation;
         this.middlewares = [];
         this.wrappedImplementation = {};
+        this.isWrapped = true;
         this.wrap();
     }
 
@@ -37,7 +38,6 @@ export default class RPCService {
     }
 
     wrap() {
-        this.isWrapped = true;
         lodash.each(this.implementation, (fn, name) => {
             const middlewares = lodash.concat(
                 [...GlobalHandlerInterceptors],

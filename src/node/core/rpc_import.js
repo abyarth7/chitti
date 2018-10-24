@@ -47,6 +47,10 @@ function getProtoClasses(proto_root, package_rpc_root, path) {
                             }
                         }
 
+                        static decode(...args) {
+                            return new this(super.decode(...args));
+                        }
+
                         toString() {
                             return this.constructor.name;
                         }

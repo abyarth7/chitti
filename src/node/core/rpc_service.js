@@ -35,11 +35,6 @@ class RPCService {
         this.wrap();
     }
 
-    static addMiddleware(grpcMiddleWareObject) {
-        this.globalMiddlewares = this.globalMiddlewares || [];
-        this.globalMiddlewares.push(grpcMiddleWareObject);
-    }
-
     static handle(service) {
         return Class => {
             const impl = {};
@@ -53,16 +48,11 @@ class RPCService {
         };
     }
 
-    addMiddleware(grpcMiddleWareObject) {
-        this.middlewares.push(grpcMiddleWareObject);
-        this.wrap();
-    }
-
     wrap() {
         var _this = this;
 
         _lodash2.default.each(this.implementation, (fn, name) => {
-            const middlewares = _lodash2.default.concat([...GlobalHandlerInterceptors], [...this.middlewares].reverse());
+            const middlewares = _lodash2.default.concat([...GlobalHandlerInterceptors], [...this.middlewares]);
             const totalMiddleWares = middlewares.length;
             this.wrappedImplementation[name] = (() => {
                 var _ref = _asyncToGenerator(function* (request, callback) {

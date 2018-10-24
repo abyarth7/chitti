@@ -11,7 +11,7 @@ export default class RPCServer extends grpc.Server {
     }
 
     addService(serviceInst, implementation) {
-        if (serviceInst.constructor === RPCService) {
+        if (serviceInst.isWrapped) {
             super.addService(serviceInst.service, serviceInst.wrappedImplementation);
         }
         else if (implementation === undefined && typeof serviceInst === 'function' && serviceInst.ServiceClient) {

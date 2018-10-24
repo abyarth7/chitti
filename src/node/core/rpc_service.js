@@ -51,6 +51,7 @@ class RPCService {
     wrap() {
         var _this = this;
 
+        this.isWrapped = true;
         _lodash2.default.each(this.implementation, (fn, name) => {
             const middlewares = _lodash2.default.concat([...GlobalHandlerInterceptors], [...this.middlewares]);
             const totalMiddleWares = middlewares.length;

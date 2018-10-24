@@ -30,7 +30,7 @@ class RPCServer extends _grpc2.default.Server {
     }
 
     addService(serviceInst, implementation) {
-        if (serviceInst.constructor === _rpc_service2.default) {
+        if (serviceInst.isWrapped) {
             super.addService(serviceInst.service, serviceInst.wrappedImplementation);
         } else if (implementation === undefined && typeof serviceInst === 'function' && serviceInst.ServiceClient) {
             const grpc_service = _rpc_service2.default.handle(serviceInst.ServiceClient)(serviceInst);
